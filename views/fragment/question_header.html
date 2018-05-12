@@ -1,0 +1,117 @@
+{{define "question_header.html"}}
+  <div data-zop-question="{&quot;title&quot;:&quot;{{.question.Title}}&quot;,&quot;id&quot;:{{.question.ID}},&quot;isEditable&quot;:false}"> 
+   <div class="QuestionHeader"> 
+    <div class="QuestionHeader-content"> 
+     <div class="QuestionHeader-main"> 
+      <div class="QuestionHeader-tags"> 
+       <div class="QuestionHeader-topics">
+         {{range $topickey,$topic:=.question.Topics}} 
+        <div class="Tag QuestionTopic"> 
+         <span class="Tag-content"><a class="TopicLink" href="//www.zhihu.com/topic/{{$topic.ID}}" target="_blank"> 
+           <div class="Popover"> 
+            <div id="null-toggle" aria-haspopup="true" aria-expanded="false" aria-owns="null-content">
+              {{$topic.Name}} 
+            </div> 
+           </div></a></span> 
+        </div> {{end}} 
+       </div> 
+      </div> 
+      <h1 class="QuestionHeader-title">{{.question.Title}}</h1> 
+      <div> 
+       <div class="QuestionHeader-detail">
+         {{if ge (len .question.Description) 81}} 
+        <div class="QuestionRichText QuestionRichText--expandable QuestionRichText--collapsed"> 
+         <div> 
+          <span class="RichText" itemprop="text">{{.question.Description}}</span> 
+          <button class="Button QuestionRichText-more Button--plain" type="button">显示全部 
+           <svg viewbox="0 0 10 6" class="Icon QuestionRichText-more-icon Icon--arrow" style="height:16px;width:10px" width="10" height="16" aria-hidden="true"> 
+            <title></title> 
+            <g> 
+             <path d="M8.716.217L5.002 4 1.285.218C.99-.072.514-.072.22.218c-.294.29-.294.76 0 1.052l4.25 4.512c.292.29.77.29 1.063 0L9.78 1.27c.293-.29.293-.76 0-1.052-.295-.29-.77-.29-1.063 0z" /> 
+            </g> 
+           </svg></button> 
+         </div> 
+        </div> {{else}} 
+        <div class="QuestionRichText"> 
+         <div> 
+          <span class="RichText" itemprop="text">{{.question.Description}}</span> 
+         </div> 
+        </div> {{end}} 
+       </div> 
+      </div> 
+     </div> 
+     <div class="QuestionHeader-side"> 
+      <div class="QuestionHeader-follow-status"> 
+       <div class="QuestionFollowStatus"> 
+        <div class="NumberBoard QuestionFollowStatus-counts NumberBoard--divider"> 
+         <button type="button" class="Button NumberBoard-item Button--plain"> 
+          <div class="NumberBoard-itemInner"> 
+           <div class="NumberBoard-itemName">
+             关注者 
+           </div> 
+           <strong class="NumberBoard-itemValue" title="{{.question.FollowerCount}}{{.question.FollowerCount}}">{{.question.FollowerCount}}</strong> 
+          </div> </button> 
+         <div class="NumberBoard-item"> 
+          <div class="NumberBoard-itemInner"> 
+           <div class="NumberBoard-itemName">
+             被浏览 
+           </div> 
+           <strong class="NumberBoard-itemValue" title="{{.question.VisitCount}}">{{.question.VisitCount}}</strong> 
+          </div> 
+         </div> 
+        </div> 
+       </div> 
+      </div> 
+     </div> 
+    </div> 
+    <div class="QuestionHeader-footer"> 
+     <div class="QuestionHeader-footer-inner"> 
+      <div class="QuestionHeader-main QuestionHeader-footer-main"> 
+       <div class="QuestionButtonGroup"> 
+        <button class="Button FollowButton Button--primary {{if .question.Followed}}Button--grey" type="button">已关注{{else}}Button--blue" type="button">关注问题{{end}}</button> 
+        {{if .question.Answered}} 
+        <a type="button" class="Button Button--blue" href="/question/{{.question.ID}}/answer/{{.question.VisitorAnswerID}}">
+         <svg class="Zi Zi--Preview QuestionButton-icon" fill="currentColor" viewbox="0 0 24 24" width="17" height="17">
+          <path d="M19.49 14.362l-2.03-1.83 1.116-1.137a1.352 1.352 0 0 1 1.921-.009c.535.535.54 1.4.01 1.94l-1.016 1.036zm-4.883 4.935a2.3 2.3 0 0 1-1.12.63l-1.136.264c-.29.058-.668-.105-.56-.56l.27-1.158a2.3 2.3 0 0 1 .599-1.09l3.809-3.84 2.03 1.829-3.892 3.925zM4.06 5H19.94C20.526 5 21 5.448 21 6s-.474 1-1.059 1H4.06C3.474 7 3 6.552 3 6s.474-1 1.059-1zM4 11h9a1 1 0 0 1 0 2H4a1 1 0 0 1 0-2zm0 6h4a1 1 0 0 1 0 2H4a1 1 0 0 1 0-2z" fill-rule="evenodd"></path>
+         </svg> 查看回答</a> {{else}} 
+        <button class="Button Button--blue" type="button"> 
+         <svg viewbox="0 0 12 12" class="Icon Button-icon Icon--modify" style="height:16px;width:14px" width="14" height="16" aria-hidden="true"> 
+          <title></title> 
+          <g> 
+           <path d="M.423 10.32L0 12l1.667-.474 1.55-.44-2.4-2.33-.394 1.564zM10.153.233c-.327-.318-.85-.31-1.17.018l-.793.817 2.49 2.414.792-.814c.318-.328.312-.852-.017-1.17l-1.3-1.263zM3.84 10.536L1.35 8.122l6.265-6.46 2.49 2.414-6.265 6.46z" fill-rule="evenodd" /> 
+          </g> 
+         </svg>写回答</button> {{end}} 
+       </div> 
+       <div class="QuestionHeaderActions"> 
+        <div class="QuestionHeader-Comment"> 
+         <button class="Button Button--plain Button--withIcon Button--withLabel" type="button"><span style="display:inline-flex;align-items:center">​ 
+           <svg class="Zi Zi--Comment Button-zi" fill="currentColor" viewbox="0 0 24 24" width="1.2em" height="1.2em"> 
+            <path d="M10.241 19.313a.97.97 0 0 0-.77.2 7.908 7.908 0 0 1-3.772 1.482.409.409 0 0 1-.38-.637 5.825 5.825 0 0 0 1.11-2.237.605.605 0 0 0-.227-.59A7.935 7.935 0 0 1 3 11.25C3 6.7 7.03 3 12 3s9 3.7 9 8.25-4.373 9.108-10.759 8.063z" fill-rule="evenodd"></path> 
+           </svg></span>{{if eq .question.CommentCount 0 }}添加评论{{else}}{{.question.CommentCount}} 条评论{{end}}</button> 
+        </div> 
+        <div class="Popover ShareMenu"> 
+         <div class="" id="null-toggle" aria-haspopup="true" aria-expanded="false" aria-owns="null-content"> 
+          <button class="Button Button--plain Button--withIcon Button--withLabel" type="button"><span style="display:inline-flex;align-items:center">​ 
+            <svg class="Zi Zi--Share Button-zi" fill="currentColor" viewbox="0 0 24 24" width="1.2em" height="1.2em"> 
+             <path d="M2.931 7.89c-1.067.24-1.275 1.669-.318 2.207l5.277 2.908 8.168-4.776c.25-.127.477.198.273.39L9.05 14.66l.927 5.953c.18 1.084 1.593 1.376 2.182.456l9.644-15.242c.584-.892-.212-2.029-1.234-1.796L2.93 7.89z" fill-rule="evenodd"></path> 
+            </svg></span>分享</button> 
+         </div> 
+        </div> 
+        <button class="Button Button--plain Button--withIcon Button--withLabel" type="button"><span style="display:inline-flex;align-items:center">​ 
+          <svg class="Zi Zi--Star Button-zi" fill="currentColor" viewbox="0 0 24 24" width="1.2em" height="1.2em"> 
+           <path d="M5.515 19.64l.918-5.355-3.89-3.792c-.926-.902-.639-1.784.64-1.97L8.56 7.74l2.404-4.871c.572-1.16 1.5-1.16 2.072 0L15.44 7.74l5.377.782c1.28.186 1.566 1.068.64 1.97l-3.89 3.793.918 5.354c.219 1.274-.532 1.82-1.676 1.218L12 18.33l-4.808 2.528c-1.145.602-1.896.056-1.677-1.218z" fill-rule="evenodd"></path> 
+          </svg></span>邀请回答</button> 
+        <div class="Popover"> 
+         <button class="Button Button--plain Button--withIcon Button--iconOnly" aria-label="更多" type="button" id="null-toggle" aria-haspopup="true" aria-expanded="false" aria-owns="null-content"><span style="display:inline-flex;align-items:center">​ 
+           <svg class="Zi Zi--Dots Button-zi" fill="currentColor" viewbox="0 0 24 24" width="1.2em" height="1.2em"> 
+            <path d="M5 14a2 2 0 1 1 0-4 2 2 0 0 1 0 4zm7 0a2 2 0 1 1 0-4 2 2 0 0 1 0 4zm7 0a2 2 0 1 1 0-4 2 2 0 0 1 0 4z" fill-rule="evenodd"></path> 
+           </svg></span></button> 
+        </div> 
+       </div> 
+       <div class="QuestionHeader-actions"></div> 
+      </div> 
+     </div> 
+    </div> 
+   </div> 
+  </div>
+{{end}}

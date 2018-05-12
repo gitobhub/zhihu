@@ -1,0 +1,57 @@
+package router
+
+import (
+	"github.com/gin-gonic/gin"
+	"zhihu/controllers"
+	"zhihu/middleware"
+)
+
+func Route(router *gin.Engine) {
+	router.LoadHTMLGlob("views/**/*")
+	//	router.LoadHTMLFiles("views/index.html")
+
+	router.Static("/static", "./static")
+
+	//foobar
+	router.GET("/foo", handleFoo)
+
+	router.NoRoute(controllers.Handle404)
+	router.GET("/", controllers.IndexGet)
+	router.GET("/signup", controllers.SignupGet)
+	router.POST("/signup", controllers.SignupPost)
+	router.GET("/signin", controllers.SigninGet)
+	router.POST("/signin", controllers.SigninPost)
+	router.GET("/logout", controllers.LogoutGet)
+	//question
+	router.GET("/question/:qid", controllers.QuestionGet)
+	//answer
+	router.GET("/question/:qid/answer/:aid", middleware.RefreshSession(), controllers.AnswerGet)
+	//api
+	api := router.Group("/api")
+	{
+		api.GET("/answers/:id/voters", controllers.AnswerVoters)
+		//		api.GET("answers/:id/comments", controllers.GetAnswerComments)
+		//		api.GET("questions/:id/comments", controllers.GetQuestionComments)
+		api.GET("questions/:id/followers", controllers.QuestionFollowers)
+		api.GET("/members/:url_token", controllers.MemberInfo)
+
+		api.Use(middleware.SigninRequired())
+		api.POST("/answers/:id/voters", controllers.VoteAnswer)
+		//		api.POST("/answers/:id/comments", controllers.PostAnswerComment)
+		//		api.DELETE("/answers/:id/comments", controllers.DeleteAnswerComment)
+
+		//		api.POST("/questions/:id/comments", controllers.PostQuestionComment)
+		//		api.DELETE("/questions/:id/comments", controllers.DeleteQuestionComment)
+		api.POST("/questions/:id/followers", controllers.FollowQuestion)
+		api.DELETE("/questions/:id/followers", controllers.UnfollowQuestion) //204NoContent
+
+		//		api.POST("/comments/:id/actions/like", controllers.LikeComment)
+		//		api.DELETE("/comments/:id/actions/like", controllers.UndoLikeComment)
+		api.POST("/members/:url_token/followers", controllers.FollowMember)
+		api.DELETE("/members/:url_token/followers", controllers.UnfollowMember)
+	}
+}
+
+func handleFoo(c *gin.Context) {
+	c.HTML(200, "foo.html", nil)
+}

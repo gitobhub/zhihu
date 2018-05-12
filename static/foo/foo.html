@@ -1,0 +1,23 @@
+<html>
+    <body>
+        <div id="page">
+            <h1 id="header">List</h1>
+            <h2>Buy groceries</h2>
+            <u1>
+                <li id="one" class="hot"><em><span class="fresh">fresh</span></em>figs</li>
+                <li id="two" class="hot">pine nuts</li>
+                <li id="three" class="cold ok">honey</li>
+                <li id="four">balsamic vinegar</li>
+            </u1>
+        </div>
+        <script src="static/js/jquery-3.3.1.min.js"></script>
+        <script language="javascript">
+            $(':header').addClass('headline');
+            $('li:lt(3)').hide().fadeIn(1500);
+            $('li').on('click', function() {
+                $(this).remove();
+            });
+            alert($("u1").children(".hot").eq(0).html());
+        </script>
+    </body>
+</html>

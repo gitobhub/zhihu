@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="zh" data-hairline="true" data-theme="light" data-focus-method="pointer" style="overflow: hidden; margin-bottom: 17px; margin-right: 17px;"> 
+  <head> 
+  <meta charset="utf-8" /> 
+  <title data-react-helmet="true">{{.question.Title}} - 知乎</title> 
+  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1" /> 
+  <meta name="renderer" content="webkit" /> 
+  <meta name="force-rendering" content="webkit" /> 
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />  
+  <meta name="google-site-verification" content="FTeR0c8arOPKh8c5DYh_9uu98_zJbaWw53J-Sch9MTg" /> 
+  <meta data-react-helmet="true" name="apple-itunes-app" content="app-id=432274380, app-argument=zhihu://answers/264958421" /> 
+  <link rel="shortcut icon" type="image/x-icon" href="/static/favicon.ico" /> 
+  <link rel="dns-prefetch" href="//static.zhimg.com" /> 
+  <link rel="dns-prefetch" href="//pic1.zhimg.com" /> 
+  <link rel="dns-prefetch" href="//pic2.zhimg.com" /> 
+  <link rel="dns-prefetch" href="//pic3.zhimg.com" /> 
+  <link rel="dns-prefetch" href="//pic4.zhimg.com" /> 
+  <script src="/static/js/jquery-3.3.1.min.js"></script>
+  <link href="/static/heifetz/app.css" rel="stylesheet" /> 
+  <style type="text/css">.CloseIcon-icon-2xww{transition:opacity .3s ease-out}.CloseIcon-icon-2xww:hover{opacity:.8}</style>
+  <style type="text/css">.animations-fadeIn-1aFv{animation:animations-fadeIn-1aFv .3s ease-out both}@keyframes animations-fadeIn-1aFv{0%{opacity:0}to{opacity:1}}.animations-fadeOut-3XSQ{animation:animations-fadeOut-3XSQ .3s ease-out both}@keyframes animations-fadeOut-3XSQ{0%{opacity:1}to{opacity:0}}.animations-fadeInUp-3KKK{animation:animations-fadeInUp-3KKK .3s cubic-bezier(.25,.1,.35,1) both}@keyframes animations-fadeInUp-3KKK{0%{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}.animations-fadeOutDown-r_A_{animation:animations-fadeOutDown-r_A_ .3s cubic-bezier(.25,.1,.35,1) both}@keyframes animations-fadeOutDown-r_A_{0%{transform:translateY(0)}to{opacity:0;transform:translateY(20px)}}</style>
+  <style type="text/css">.Modal-backdrop-2ksh{background-color:rgba(0,0,0,.65)}.Modal-backdrop-2ksh,.Modal-modalWrapper-56Mq{position:fixed;top:0;right:0;bottom:0;left:0;z-index:10010}.Modal-modalWrapper-56Mq{display:-ms-flexbox;display:flex;-ms-flex-align:center;align-items:center;-ms-flex-pack:center;justify-content:center}.Modal-modal-wf58{position:relative;z-index:10011;background:#fff;border-radius:2px}.Modal-content-3JxL{width:588px;max-height:calc(100vh - 24px * 2);overflow-x:hidden;overflow-y:auto;-webkit-overflow-scrolling:touch}.Modal-closeButton-3JkR{position:absolute;top:4px;right:-44px;padding:12px;width:40px;height:40px;cursor:pointer;box-sizing:border-box;background:none;outline:none;border:none}</style>
+  <style type="text/css">.FeedbackButton-button-3waL{position:fixed;z-index:10000;bottom:40px;right:40px;width:40px;height:40px;cursor:pointer;border-radius:50%;background-color:#fff;border:none;outline:none;box-shadow:0 0 10px rgba(0,0,0,.15);font-weight:700;line-height:normal}.FeedbackButton-icon-1Rgw{display:inline-block;vertical-align:middle;width:18px;height:18px;background-image:url(data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzUiIGhlaWdodD0iMzYiIHZpZXdCb3g9IjAgMCAzNSAzNiIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48dGl0bGU+R3JvdXAgNjwvdGl0bGU+PGcgZmlsbD0iIzAwOEZFQiIgZmlsbC1ydWxlPSJldmVub2RkIj48cGF0aCBkPSJNMTMgMTguM2MwLS40IDAtLjcuNC0xIC4yLS4yLjUtLjMuOC0uMy40IDAgLjcgMCAxIC40LjIuMi4zLjUuMyAxIDAgLjIgMCAuNS0uNC43IDAgLjQtLjQuNS0uOC41LS4zIDAtLjYgMC0uOC0uNC0uMyAwLS40LS40LS40LS43ek0xMCAxMC43di0xYy40LTEgMS41LTIuNyA0LjItMi43IDIgMCAzLjggMS40IDMuOCAzcy0xLjQgMi43LTIgMy4zYy0uOC42LTEgMS0xLjIgMS43LS4yLjYtLjYgMS0xLjMgMS0uMy0uMi0uNi0uMy0uNy0uNXYtLjhjMC0uMiAwLS43LjMtMS4ybDEuNC0xLjVjMS40LTEuMiAxLjYtMiAuOC0yLjgtLjUtLjQtMS42LS41LTIuMiAwLS44LjQtMSAxLTEuMiAxLjMtLjIuNS0uMyAxLTEuMyAxLS4zLS4yLS40LS40LS41LS44eiIvPjxwYXRoIGQ9Ik0yOS44IDEwLjJ2M2MxLjQgMS44IDIuMyA0IDIuMyA2LjMgMCAzLjgtMi4yIDctNS41IDl2My44bC0zLjctMi41LTMgLjNjLTIuOCAwLTQuMy0uOC02LjQtMi4yaC0zLjFDMTMgMzAuNCAxNS42IDMyIDIwIDMyYy44IDAgMS43IDAgMi42LS4ybDYgNHYtNi40YzMuNS0yLjQgNS43LTYgNS43LTEwIDAtMy42LTEuNy03LTQuNS05LjJ6TTE0LjQgMjUuNmM4IDAgMTMuMi02IDEzLjItMTNTMjEgMCAxNC40IDBDNi40IDAgMCA1LjcgMCAxMi43YzAgNCAxLjUgNy41IDQuNCAxMFYyOWw2LjMtMy42IDMuNy4yek0xNC4yIDJjNi41IDAgMTEuNSA1LjMgMTEuNSAxMUMyNS43IDE5IDIxIDI0IDE0LjQgMjRjLTEgMC0zLjYtLjMtNC41LS41TDYgMjUuN3YtNGMtMi43LTIuMi00LTUtNC04LjZDMiA3IDcgMiAxNCAyeiIvPjwvZz48L3N2Zz4=);background-repeat:no-repeat;background-size:contain}.FeedbackButton-button-3waL:hover .FeedbackButton-icon-1Rgw{background-image:url(data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzUiIGhlaWdodD0iMzYiIHZpZXdCb3g9IjAgMCAzNSAzNiIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48dGl0bGU+R3JvdXAgMTE8L3RpdGxlPjxnIGZpbGw9Im5vbmUiIGZpbGwtcnVsZT0iZXZlbm9kZCI+PHBhdGggZD0iTTI5LjQgMTNjMCAyLS4zIDguMi01IDExLjQtNC4zIDMtOSAzLjMtMTEuMyAzLjNoLTNjMi44IDIuNyA2LjYgNC44IDEyLjIgNCAxIDAgNi4zIDQgNi4zIDRWMjljMy41LTIuMyA1LjMtNS4yIDUuNi05LjUuMy0zLjctMS42LTctNC41LTkuNXYzem0tMTUgMTIuNmM4IDAgMTMuMi02IDEzLjItMTNTMjEgMCAxNC40IDBDNi40IDAgMCA1LjcgMCAxMi43YzAgNCAxLjUgNy41IDQuNCAxMFYyOWw2LjMtMy42IDMuNy4zeiIgZmlsbD0iIzAwOEZFQiIvPjxwYXRoIGQ9Ik0xMyAxOC4zYzAtLjQgMC0uNy40LTFzLjUtLjMuOC0uM2MuNCAwIC43IDAgMSAuNC4yLjIuMy41LjMgMSAwIC4yIDAgLjUtLjQuNyAwIC40LS40LjUtLjguNS0uMyAwLS42IDAtLjgtLjQtLjMgMC0uNC0uNC0uNC0uN3ptLTMtNy42di0xYy40LTEgMS40LTIuNyA0LjItMi43IDIgMCAzLjggMS40IDMuOCAzcy0xLjQgMi43LTIgMy4zYy0uOC42LTEgMS0xLjIgMS43LS4yLjYtLjYgMS0xLjMgMS0uMy0uMi0uNi0uMy0uNy0uNXYtLjhjMC0uMiAwLS43LjMtMS4ybDEuNC0xLjVjMS40LTEuMiAxLjYtMiAuOC0yLjgtLjUtLjQtMS42LS41LTIuMiAwLS44LjQtMSAxLTEuMiAxLjMtLjIuNS0uMyAxLTEuMyAxLS4zLS4yLS40LS40LS41LS44eiIgZmlsbD0iI0ZGRiIvPjwvZz48L3N2Zz4=)}</style>
+  <style type="text/css">.DrawingExample-svg-30WA{position:absolute;top:30px;right:0;left:0;margin:auto;transform:rotate(-44deg)}.DrawingExample-ellipse-26bv{stroke-dasharray:520;transform-origin:center;animation:DrawingExample-drawingExample-3Bm3 .6s linear both}@keyframes DrawingExample-drawingExample-3Bm3{0%{stroke-dashoffset:520}50%{stroke-dashoffset:1000;opacity:1}to{stroke-dashoffset:1000;opacity:0}}</style>
+  <style type="text/css">.Spinner-spinner-2PGn{position:absolute;width:30px;height:30px;top:50%;left:50%;margin:-15px 0 0 -15px;animation:Spinner-rotate-RMMJ .8s linear infinite}.Spinner-spinner-2PGn .Spinner-circle-teFy{stroke:#4197ff;stroke-dasharray:187;stroke-dashoffset:46.75;transform-origin:center}@keyframes Spinner-rotate-RMMJ{0%{transform:rotate(0deg)}to{transform:rotate(1turn)}}</style>
+  <style type="text/css">.FeedbackForm-form-1uUg{padding:40px 24px 32px;width:100%;font-size:14px;line-height:1.5;font-family:HelveticaNeue-Light,Helvetica,PingFangSC-Light,Hiragino Sans GB,Microsoft YaHei,Arial,sans-serif;color:#404040;box-sizing:border-box}.FeedbackForm-header-3hQI{margin-bottom:26px;text-align:center}.FeedbackForm-title-2uCC{font-size:24px;font-weight:500;line-height:33px;font-family:Helvetica,PingFang SC,Hiragino Sans GB,Microsoft YaHei,Arial,sans-serif}.FeedbackForm-inputBox-15yJ{display:block;padding:12px;width:100%;height:auto;font-size:15px;border:1px solid #e7eaf1;border-radius:3px;box-sizing:border-box;resize:none;outline:none;color:inherit;transition:box-shadow .15s ease-out;overflow:auto}.FeedbackForm-inputBox-15yJ::-webkit-input-placeholder{color:#9aaabf;transition:color .15s ease-out}.FeedbackForm-inputBox-15yJ:-ms-input-placeholder{color:#9aaabf;transition:color .15s ease-out}.FeedbackForm-inputBox-15yJ::placeholder{color:#9aaabf;transition:color .15s ease-out}.FeedbackForm-inputBox-15yJ:hover::-webkit-input-placeholder{color:rgba(154,170,191,.8)}.FeedbackForm-inputBox-15yJ:hover:-ms-input-placeholder{color:rgba(154,170,191,.8)}.FeedbackForm-inputBox-15yJ:hover::placeholder{color:rgba(154,170,191,.8)}.FeedbackForm-inputBox-15yJ:focus{box-shadow:0 0 5px #e7eaf1}.FeedbackForm-inputBox-15yJ:focus::-webkit-input-placeholder{color:rgba(154,170,191,.8)}.FeedbackForm-inputBox-15yJ:focus:-ms-input-placeholder{color:rgba(154,170,191,.8)}.FeedbackForm-inputBox-15yJ:focus::placeholder{color:rgba(154,170,191,.8)}.FeedbackForm-inputBox-15yJ.FeedbackForm-isWarning-2ds-{border-color:#f75659}.FeedbackForm-inputBox-15yJ.FeedbackForm-isWarning-2ds-::-webkit-input-placeholder{color:#f75659}.FeedbackForm-inputBox-15yJ.FeedbackForm-isWarning-2ds-:-ms-input-placeholder{color:#f75659}.FeedbackForm-inputBox-15yJ.FeedbackForm-isWarning-2ds-::placeholder{color:#f75659}.FeedbackForm-inputBox-15yJ.FeedbackForm-isWarning-2ds-:focus{box-shadow:none}.FeedbackForm-screenShot--Gsn{overflow:hidden;box-sizing:border-box;transition:max-height .3s ease,opacity .3s ease}.FeedbackForm-screenShotLabel-2Sgh{padding-top:22px;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none}.FeedbackForm-canvasContainer-mrde{margin-top:8px;position:relative;background-color:#f6f7f9}.FeedbackForm-canvas-tSGI{display:block;max-width:100%;cursor:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABIAAAASCAYAAABWzo5XAAAABGdBTUEAALGPC/xhBQAAARpJREFUOBGdkr1KA0EUhTcxEkSQQIpAihQWPoedD2BnIVsZQiBVEkiR7SwtBDsJqXwBLQwEgoWNjY2FjYUQ38Ei5Oc7sBeGLTKze+Djzsyecxh2N4ryq0zkHpYQQ2H1SW5TNsxukaZzQsewACvTvIBg3eFUaABHMEv3OruBIN3icm8wZl+FZ3iBQ/AqweGW2FrlKlChV0McFsxOvaegm/T2lLzzTC/dqzaO7A1s/8GzE28Dhhj0f1jQnZ+c18CrKxxrcMO2/uK87m3AcAkrsKA7vzlvQJAmuNywrX84bwY1YBrBATyCFWj+QguCJKNCU1DZQ7r/Y55CsK5x2i2eWFcggTPIJd3Eiv5Zd3KlU3OJOQd9lVd4A5Xl1g4YG2GGhwRfegAAAABJRU5ErkJggg==) 0 17,default;cursor:-webkit-image-set(url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABIAAAASCAYAAABWzo5XAAAABGdBTUEAALGPC/xhBQAAARpJREFUOBGdkr1KA0EUhTcxEkSQQIpAihQWPoedD2BnIVsZQiBVEkiR7SwtBDsJqXwBLQwEgoWNjY2FjYUQ38Ei5Oc7sBeGLTKze+Djzsyecxh2N4ryq0zkHpYQQ2H1SW5TNsxukaZzQsewACvTvIBg3eFUaABHMEv3OruBIN3icm8wZl+FZ3iBQ/AqweGW2FrlKlChV0McFsxOvaegm/T2lLzzTC/dqzaO7A1s/8GzE28Dhhj0f1jQnZ+c18CrKxxrcMO2/uK87m3AcAkrsKA7vzlvQJAmuNywrX84bwY1YBrBATyCFWj+QguCJKNCU1DZQ7r/Y55CsK5x2i2eWFcggTPIJd3Eiv5Zd3KlU3OJOQd9lVd4A5Xl1g4YG2GGhwRfegAAAABJRU5ErkJggg==) 1x,url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACQAAAAkCAYAAADhAJiYAAAABGdBTUEAALGPC/xhBQAAAn9JREFUWAnFlz1IV2EUxs2+ixCCrCCrIaiGGnLIRdBacqkhtCEbqqVaoqmacpIma6rFHHITh1pKMKFaInATkb4hKChKIwj7rt8D74XDy3tfKM69Hng4zz3nvc9zfH3/93//DQ31xWqsBsEnMAU6wILFSpwnwB+Db/BDoPZYjuMYsMMU/Af1nron2o7hh5KBNNhP0AtqjV24vQPFzsT5F70jVU7UiPhNcNyY7IC/AfEwxfUsvcVmvRtdhNIQkNFvcAoUsQ3yGhRDxLmpWOiZryUMzxqDrfCXiTXjZo0bvZIwKnbhvHHZBH9q1s7Am03fhV42BsUQcb5knDbAp8EzsNHUXWgfKrF52XW/cVwH1265xgXUyszL6gOuExixc/8xjIZ8C9YbHRd6GpWyHcjV33PfTpcJjMgJuJ4xOeNU7yP37DY6LvQoKnrUpwxzNb12tLpMYES64foyzBmnep+5p83ouNCDqHwHKcNc7Qv3tLtMYEQOwPVClTNO9ea5Z7/RcaH7UJFwyjBX0x/Q5TKBEdFWa8tzxqme3gTdX0/3IqrDmDLM1XTodfhdYw9qcyBnnOrpcdDrOglienDpAZYyzNX0oDwJ3GMUxZxxWe+M+yRBcBX53j8OpS9Z9ziM4tKguoJ8B5Tthq1fDPe4p+co3gbLgrLyLWDNY94X1rqnFmN8F64dUiwBIyAeRNd6Za0sjqFsTXWGdJYU+q00DGz/qhpVxg3EraH4Q7AmmDaSB4Hq10Ot0vQimMVDPaLeFJz1A1DvQsqVxmbU40Hs9ST9tZVOYMT1r+gw1zF9ReEx2BI3qrrWp6jTiH+FPwD6pI2BJ6DW0HkYBzNAQ9wH82DB4i/kUnkzGX+skQAAAABJRU5ErkJggg==) 2x) 0 17,default}.FeedbackForm-canvas-tSGI.FeedbackForm-isCapturing-3UFp{display:none}.FeedbackForm-checkLabelWrapper-3B7w{margin-top:12px}.FeedbackForm-checkLabel-2VTb{cursor:pointer;color:#9aaabf;transition:color .15s ease-out;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none}.FeedbackForm-checkLabel-2VTb:hover{color:rgba(154,170,191,.8)}.FeedbackForm-checkLabel-2VTb input{margin-right:.5em;vertical-align:1px}.FeedbackForm-actions-dJ87{margin-top:40px;text-align:center}.FeedbackForm-submitButton-1oKQ{display:inline-block;min-width:220px;padding:8px 1em;background-color:#0f88eb;border:1px solid #0f88eb;border-radius:3px;font:inherit;color:#fff;transition:background-color .15s ease-out,opacity .15s ease-out;cursor:pointer;outline:none}.FeedbackForm-submitButton-1oKQ[disabled]{opacity:.8;cursor:default}.FeedbackForm-submitButton-1oKQ:hover{background-color:#0d79d1}.FeedbackForm-submitButton-1oKQ:active{opacity:.8}.FeedbackForm-successMask-34go{display:-ms-flexbox;display:flex;-ms-flex-pack:center;justify-content:center;-ms-flex-align:center;align-items:center;position:absolute;top:0;left:0;width:100%;height:100%;background-color:#fff}.FeedbackForm-successTitle-1Y6p{font-size:24px;font-weight:500;line-height:33px;font-family:Helvetica,PingFang SC,Hiragino Sans GB,Microsoft YaHei,Arial,sans-serif;text-align:center}.FeedbackForm-successSubtitle-A_aP{margin-top:10px;font-size:18px;line-height:33px;text-align:center}</style>
+ </head> 
+ <body class="Entry-body"> 
+  <div id="root"> 
+   <div data-zop-usertoken="{}" data-reactroot=""> 
+    <div class="LoadingBar"></div> 
+    {{template "header.html" .}} 
+    <main role="main" class="App-main"> 
+     <div class="QuestionPage" itemscope="" itemtype="http://schema.org/Question"> 
+      <meta itemprop="name" content="{{.question.Title}}" /> 
+      <meta itemprop="url" content="/question/{{.question.ID}}" /> 
+      <meta itemprop="keywords" content="{{range $topickey,$topic:=.question.Topics}}
+      {{$topic.Name}},{{end}}" /> 
+      <meta itemprop="answerCount" content="{{.question.AnswerCount}}" /> 
+      <meta itemprop="commentCount" content="{{.question.CommentCount}}" /> 
+      <meta itemprop="dateCreated" content="{{.question.DateCreated}}" /> 
+      <meta itemprop="dateModified" content="{{.question.DateModified}}" /> 
+      <meta itemprop="zhihu:visitsCount" /> 
+      <meta itemprop="zhihu:followerCount" content="{{.question.FollowerCount}}" /> 
+      {{template "question_header.html" .}}
+      <div class="Question-main"> 
+       <div class="Question-mainColumn" data-zop-questionanswerlist="true"> 
+        <div class="Card"> 
+         <a class="QuestionMainAction" data-za-detail-view-element_name="ViewAll" href="/question/{{.question.ID}}">查看全部 {{.question.AnswerCount}} 个回答</a> 
+        </div> 
+        <div class="Card AnswerCard"> 
+         <div class="QuestionAnswer-content"> 
+          <div class="ContentItem AnswerItem" data-zop="{&quot;authorName&quot;:&quot;{{.answer.Author.Name}}&quot;,&quot;itemId&quot;:{{.answer.ID}},&quot;title&quot;:&quot;{{.question.Title}}&quot;,&quot;type&quot;:&quot;answer&quot;}" name="{{.answer.ID}}" itemprop="mainEntityOfPage" itemtype="http://schema.org/Answer" itemscope="">
+            <div class="ContentItem-meta">
+            <div class="AuthorInfo AnswerItem-authorInfo AnswerItem-authorInfo--related" itemprop="author" itemscope="" itemtype="http://schema.org/Person"> 
+             <meta itemprop="name" content="{{.answer.Author.Name}}" /> 
+             <meta itemprop="image" content="{{.answer.Author.AvatarURL}}" /> 
+             <meta itemprop="url" content="https://www.zhihu.com/people/{{.answer.Author.URLToken}}" /> 
+             <meta itemprop="zhihu:followerCount" /> 
+             <span class="UserLink AuthorInfo-avatarWrapper"> 
+              <div class="Popover"> 
+               <div id="null-toggle" aria-haspopup="true" aria-expanded="false" aria-owns="null-content"> 
+                <a class="UserLink-link" data-za-detail-view-element_name="User" target="_blank" href="//www.zhihu.com/people/{{.answer.Author.URLToken}}"><img class="Avatar AuthorInfo-avatar" width="38" height="38" src="{{.answer.Author.AvatarURL}}" alt="{{.answer.Author.Name}}" /></a> 
+               </div> 
+              </div></span> 
+             <div class="AuthorInfo-content"> 
+              <div class="AuthorInfo-head"> 
+               <span class="UserLink AuthorInfo-name"> 
+                <div class="Popover"> 
+                 <div id="null-toggle" aria-haspopup="true" aria-expanded="false" aria-owns="null-content"> 
+                  <a class="UserLink-link" data-za-detail-view-element_name="User" target="_blank" href="//www.zhihu.com/people/{{.answer.Author.URLToken}}">{{.answer.Author.Name}}</a> 
+                 </div> 
+                </div></span> 
+              </div> 
+              <div class="AuthorInfo-detail"> 
+               <div class="AuthorInfo-badge"> 
+                <div class="RichText AuthorInfo-badgeText">
+                  {{.answer.Author.Headline}} 
+                </div> 
+               </div> 
+              </div> 
+             </div> 
+            </div>
+            {{if ne .answer.UpvoteCount 0}}
+            <div class="AnswerItem-extraInfo">
+              <span class="Voters">
+                <button class="Button Button--plain" type="button"><span>{{.answer.UpvoteCount}}</span> 人赞同了该回答
+                </button>
+              </span> 
+            </div> 
+            {{end}}
+           </div> 
+           <meta itemprop="image" content="{{.answer.Author.AvatarURL}}" /> 
+           <meta itemprop="upvoteCount" content="{{.answer.UpvoteCount}}" /> 
+           <meta itemprop="url" content="https://www.zhihu.com/question/{{.question.ID}}/answer/{{.answer.ID}}" /> 
+           <meta itemprop="dateCreated" content="{{.answer.DateCreated}}" /> 
+           <meta itemprop="dateModified" content="{{.answer.DateModified}}" /> 
+           <meta itemprop="commentCount" content="{{.answer.CommentCount}}" /> 
+           <div class="RichContentRichContent--unescapable"> 
+              <div class="RichContent-inner"> 
+                <span class="RichText CopyrightRichText-richText" itemprop="text">{{.answer.Content}}</span> 
+              </div> 
+              <div> 
+                <div class="ContentItem-time"> 
+                <a target="_blank" href="/question/{{.question.ID}}/answer/{{.answer.ID}}"><span data-tooltip="发布于 {{.answer.DateCreated}}">编辑于 {{.answer.DateModified}}</span></a> 
+                </div> 
+              </div>
+            <div class="ContentItem-actions RichContent-actions"> 
+             <span><button class="Button VoteButton VoteButton--up {{if .answer.Upvoted}}is-active{{end}}" aria-label="赞同" type="button"><svg viewbox="0 0 20 18" class="Icon VoteButton-upIcon Icon--triangle" style="height:16px;width:9px" width="9" height="16" aria-hidden="true"><title></title><g><path d="M0 15.243c0-.326.088-.533.236-.896l7.98-13.204C8.57.57 9.086 0 10 0s1.43.57 1.784 1.143l7.98 13.204c.15.363.236.57.236.896 0 1.386-.875 1.9-1.955 1.9H1.955c-1.08 0-1.955-.517-1.955-1.9z" /></g></svg>{{.answer.UpvoteCount}}</button><button class="Button VoteButton VoteButton--down {{if .answer.Downvoted}}is-active{{end}}" aria-label="反对" type="button"><svg viewbox="0 0 20 18" class="Icon VoteButton-downIcon Icon--triangle" style="height:16px;width:9px" width="9" height="16" aria-hidden="true"><title></title><g> 
+                 <path d="M0 15.243c0-.326.088-.533.236-.896l7.98-13.204C8.57.57 9.086 0 10 0s1.43.57 1.784 1.143l7.98 13.204c.15.363.236.57.236.896 0 1.386-.875 1.9-1.955 1.9H1.955c-1.08 0-1.955-.517-1.955-1.9z" /></g></svg></button>
+              </span> 
+             <button class="Button ContentItem-action Button--plain Button--withIcon Button--withLabel" type="button"><span style="display:inline-flex;align-items:center">​ 
+               <svg class="Zi Zi--Comment Button-zi" fill="currentColor" viewbox="0 0 24 24" width="1.2em" height="1.2em"> 
+                <path d="M10.241 19.313a.97.97 0 0 0-.77.2 7.908 7.908 0 0 1-3.772 1.482.409.409 0 0 1-.38-.637 5.825 5.825 0 0 0 1.11-2.237.605.605 0 0 0-.227-.59A7.935 7.935 0 0 1 3 11.25C3 6.7 7.03 3 12 3s9 3.7 9 8.25-4.373 9.108-10.759 8.063z" fill-rule="evenodd"></path> 
+               </svg></span>{{if eq .answer.CommentCount 0}}添加评论{{else}}{{.answer.CommentCount}} 条评论{{end}}</button> 
+             <div class="Popover ShareMenu ContentItem-action"> 
+              <div class="" id="null-toggle" aria-haspopup="true" aria-expanded="false" aria-owns="null-content"> 
+               <button class="Button Button--plain Button--withIcon Button--withLabel" type="button"><span style="display:inline-flex;align-items:center">​ 
+                 <svg class="Zi Zi--Share Button-zi" fill="currentColor" viewbox="0 0 24 24" width="1.2em" height="1.2em"> 
+                  <path d="M2.931 7.89c-1.067.24-1.275 1.669-.318 2.207l5.277 2.908 8.168-4.776c.25-.127.477.198.273.39L9.05 14.66l.927 5.953c.18 1.084 1.593 1.376 2.182.456l9.644-15.242c.584-.892-.212-2.029-1.234-1.796L2.93 7.89z" fill-rule="evenodd"></path> 
+                 </svg></span>分享</button> 
+              </div> 
+             </div> 
+             <button class="Button ContentItem-action Button--plain Button--withIcon Button--withLabel" type="button"><span style="display:inline-flex;align-items:center">​ 
+               <svg class="Zi Zi--Star Button-zi" fill="currentColor" viewbox="0 0 24 24" width="1.2em" height="1.2em"> 
+                <path d="M5.515 19.64l.918-5.355-3.89-3.792c-.926-.902-.639-1.784.64-1.97L8.56 7.74l2.404-4.871c.572-1.16 1.5-1.16 2.072 0L15.44 7.74l5.377.782c1.28.186 1.566 1.068.64 1.97l-3.89 3.793.918 5.354c.219 1.274-.532 1.82-1.676 1.218L12 18.33l-4.808 2.528c-1.145.602-1.896.056-1.677-1.218z" fill-rule="evenodd"></path> 
+               </svg></span>收藏</button> 
+             <button class="Button ContentItem-action Button--plain Button--withIcon Button--withLabel" type="button"><span style="display:inline-flex;align-items:center">​ 
+               <svg class="Zi Zi--Heart Button-zi" fill="currentColor" viewbox="0 0 24 24" width="1.2em" height="1.2em"> 
+                <path d="M2 8.437C2 5.505 4.294 3.094 7.207 3 9.243 3 11.092 4.19 12 6c.823-1.758 2.649-3 4.651-3C19.545 3 22 5.507 22 8.432 22 16.24 13.842 21 12 21 10.158 21 2 16.24 2 8.437z" fill-rule="evenodd"></path> 
+               </svg></span>感谢</button> 
+             <button class="Button ContentItem-action ContentItem-rightButton Button--plain" data-zop-retract-question="true" type="button"><span class="RichContent-collapsedText">收起</span> 
+              <svg viewbox="0 0 10 6" class="Icon ContentItem-arrowIcon is-active Icon--arrow" style="height:16px;width:10px" width="10" height="16" aria-hidden="true"> 
+               <title></title> 
+               <g> 
+                <path d="M8.716.217L5.002 4 1.285.218C.99-.072.514-.072.22.218c-.294.29-.294.76 0 1.052l4.25 4.512c.292.29.77.29 1.063 0L9.78 1.27c.293-.29.293-.76 0-1.052-.295-.29-.77-.29-1.063 0z" /> 
+               </g> 
+              </svg></button> 
+            </div> 
+           </div> 
+          </div> 
+         </div> 
+        </div> 
+        <div class="Card"> 
+         <a class="QuestionMainAction" data-za-detail-view-element_name="ViewAll" href="/question/{{.question.ID}}">查看全部 {{.question.AnswerCount}} 个回答</a> 
+        </div> 
+       </div> 
+       <div class="Question-sideColumn Question-sideColumn--sticky" data-za-detail-view-path-module="RightSideBar" data-za-extra-module="{&quot;card&quot;:{&quot;content&quot;:{&quot;member_hash_id&quot;:&quot;9a88af6d8896a0dc72780f0fe82c6da7&quot;}}}"> 
+        <div> 
+         <div class="Sticky" style="left: 879px; top: -1656px; width: 296px;"> 
+          <div class="Card AppBanner"> 
+           <a class="AppBanner-link" href="http://zhi.hu/BDXoI"> 
+            <div class="AppBanner-layout"> 
+             <img class="AppBanner-qrcode" alt="QR Code of Downloading Zhihu App" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGQAAABkCAYAAABw4pVUAAAEDElEQVR4Ae3cQW5cRwwE0FGgAzhA7porxGe1gRxBWev9RaHRPc0syrsCySKnCmRjJMgfP/759fW6+O/fv//61u3Pn7+/YePfgq/Xy3zj1ptv3Hqx9cZP4z9OE5ZvT4Easqff8eoaclzSPcJPy1dvrPXi1Ruc8p3PfLHz7GL77/I5bzdkV9HD9TXksKC7dDVkV8HD9Y83RH5vnHHx6o1N+fYX218sf6o3Xz5x4jM/8XdDVGwY15BhA2xfQ1RkGMc3ZHi+R/t0gy1YvfHW38bdkNuKh341JAh0O1xDbise+o2/Ias33vzVN0U9duvl28XdkF0FD9fXkMOC7tLVkF0FD9fHN+T2jU39fEOSHokv1af4af5uSFL8cryGXBY8tashSaHL8ccbsnqj3z2v83iz3x3389nP+C7uhuwqeLi+hhwWdJeuhuwqeLj+05t8mP843btvuAPf1qcbogPDuIYMG2D7GqIiw/hj9e9D0k1NN976lK8+1htf5bN+F+/O1w3ZdeBwfQ05LOguXQ3ZVfBw/eN7iDc43UTn2c23v/yrOM1jP/ON2z/lG7de3A1RkWFcQ4YNsH0NUZFh/PH19fXt79RXb6bzr9abn27uav7qfOY7j/3NTzjxdUOSgpfjNeSy4KldDUkKXY7Hn2V583bn8wbLn+Kpf6rfjdtfPuN+PuPiboiKDOMaMmyA7WuIigzj+LMs50s303yxN3WVbzXf/uLEl+J+HvkTlr8bkhS7HK8hlwVP7WpIUuhy/PGzrNX+3kDrV2+sfKl+Nd/5Ur1x69N85ie+boiKDeMaMmyA7WuIigzjz3TTVm+k+fKn+K4e9kt8zmO+8cSf4omvG6IDw7iGDBtg+xqiIsN4+XuIN9KbuPp5Ep/xxO88p+sTv/E0r/FuiIoM4xoybIDta4iKDOP4PcT50o1MNzvV20+c6lf7my+2f4qbL7bez9MNUbFhXEOGDbB9DVGRYfz4nfruPN7E/xtfmmd1ft8E+Y3Lb7wbooLDuIYMG2D7GqIiw3j5e8juvN5QceL35lovTnwpnvpZv5pvfTdERYZxDRk2wPY1REWG8eP/XHz3DfbzenONi9N88qV8+cWr9Snf+ezXDVGRYVxDhg2wfQ1RkWH8eEOcJ90889MNXc23v1i+hFN9iq/yr+rRDUkKX47XkMuCp3Y1JCl0OR7fkMvzvNIN9yabbzzNb37iM574U779uyFJ0cvxGnJZ8NSuhiSFLsfH35B0Y1f1SHze7JRv/1Rv3Hr7ibshKjaMa8iwAbavISoyjOMbkm7i6fnt540V2//d9fZbxc5nfTdERYZxDRk2wPY1REWG8eMNSTf69rzp5jpPml8+88XyW2/c+tX8boiKDuMaMmyA7WuIigzj/wC7sm2izpKNiwAAAABJRU5ErkJggg==" /> 
+             <div class="AppBanner-content"> 
+              <div class="AppBanner-title">
+                下载知乎客户端 
+              </div> 
+              <div class="AppBanner-description">
+                与世界分享知识、经验和见解 
+              </div> 
+             </div> 
+            </div></a> 
+          </div> 
+          <div class="Card AnswerAuthor"> 
+           <div class="Card-header AnswerAuthor-title"> 
+            <div class="Card-headerText">
+              关于作者 
+            </div> 
+           </div> 
+           <div class="Card-section"> 
+            <div class="AnswerAuthor-user"> 
+             <div class="AnswerAuthor-user-avatar"> 
+              <span class="UserLink"><a class="UserLink-link" href="//www.zhihu.com/people/{{.answer.Author.URLToken}}" target="_blank" data-za-detail-view-element_name="User"><img width="60" height="60" class="Avatar Avatar--large UserLink-avatar" alt="{{.answer.Author.Name}}" src="{{.answer.Author.AvatarURL}}" /></a></span> 
+             </div> 
+             <div class="AnswerAuthor-user-content"> 
+              <div class="AnswerAuthor-user-name"> 
+               <span class="UserLink"><a class="UserLink-link" href="//www.zhihu.com/people/{{.answer.Author.URLToken}}" target="_blank" data-za-detail-view-element_name="User">{{.answer.Author.Name}}</a></span> 
+              </div> 
+              <div class="AnswerAuthor-user-headline"> 
+               <div class="RichText">
+                 {{.answer.Author.Headline}}
+               </div> 
+              </div> 
+             </div> 
+            </div> 
+           </div> 
+           <div class="Card-section"></div> 
+           <div class="Card-section"> 
+            <div class="AnswerAuthor-counts"> 
+             <div class="NumberBoard"> 
+              <a class="Button NumberBoard-item Button--plain" href="/people/{{.answer.Author.URLToken}}/answers" type="button" data-za-detail-view-element_name="Answer"> 
+               <div class="NumberBoard-itemInner"> 
+                <div class="NumberBoard-itemName">
+                  回答 
+                </div> 
+                <strong title="{{.answer.Author.AnswerCount}}" class="NumberBoard-itemValue">{{.answer.Author.AnswerCount}}</strong> 
+               </div></a> 
+              <a class="Button NumberBoard-item Button--plain" href="/people/{{.answer.Author.URLToken}}/posts" type="button" data-za-detail-view-element_name="Post"> 
+               <div class="NumberBoard-itemInner"> 
+                <div class="NumberBoard-itemName">
+                  文章 
+                </div> 
+                <strong title="{{$length:=len .answer.Author.Posts}}" class="NumberBoard-itemValue">{{$length}}</strong> 
+               </div></a> 
+              <a class="Button NumberBoard-item Button--plain" href="/people/{{.answer.Author.URLToken}}/followers" type="button" data-za-detail-view-element_name="Follower"> 
+               <div class="NumberBoard-itemInner"> 
+                <div class="NumberBoard-itemName">
+                  关注者 
+                </div> 
+                <strong title="{{.answer.Author.FollowerCount}}" class="NumberBoard-itemValue">{{.answer.Author.FollowerCount}}</strong> 
+               </div></a> 
+             </div> 
+            </div> 
+           </div> 
+          </div> 
+          <div class="Card"> 
+           <div class="Card-header AnswerInfo-title"> 
+            <div class="Card-headerText">
+              被收藏 
+             <button class="Button Button--plain" type="button">{{.answer.Author.MarkedCount}}</button> 次 
+            </div> 
+           </div> 
+           <div class="Card-section AnswerInfo-favlists" data-za-detail-view-path-module="CollectionList" data-za-extra-module="{&quot;card&quot;:{&quot;content&quot;:null}}"> 
+            <div class="AnswerInfo-favlist" data-za-detail-view-path-module="CollectionItem" data-za-extra-module="{&quot;card&quot;:{&quot;content&quot;:{&quot;type&quot;:&quot;Collection&quot;,&quot;token&quot;:&quot;38887091&quot;,&quot;follower_num&quot;:106086,&quot;author_member_hash_id&quot;:&quot;e86556453318a3cafc5de890933ce0a2&quot;}}}"> 
+             <div class="AnswerInfo-favlist-title"> 
+              <a title="赞同超过10K的回答" class="Button Button--plain" href="/collection/38887091" target="_blank" type="button" data-za-detail-view-element_name="Collection">赞同超过10K的回答</a> 
+             </div> 
+             <div class="AnswerInfo-favlist-author"> 
+              <span class="UserLink">知乎用户</span> 创建 
+             </div> 
+             <div class="AnswerInfo-favlist-followers">
+               106,086 人关注 
+             </div> 
+            </div> 
+            <div class="AnswerInfo-favlist" data-za-detail-view-path-module="CollectionItem" data-za-extra-module="{&quot;card&quot;:{&quot;content&quot;:{&quot;type&quot;:&quot;Collection&quot;,&quot;token&quot;:&quot;19928423&quot;,&quot;follower_num&quot;:94303,&quot;author_member_hash_id&quot;:&quot;e86556453318a3cafc5de890933ce0a2&quot;}}}"> 
+             <div class="AnswerInfo-favlist-title"> 
+              <a title="赞同超过1000的回答" class="Button Button--plain" href="/collection/19928423" target="_blank" type="button" data-za-detail-view-element_name="Collection">赞同超过1000的回答</a> 
+             </div> 
+             <div class="AnswerInfo-favlist-author"> 
+              <span class="UserLink">知乎用户</span> 创建 
+             </div> 
+             <div class="AnswerInfo-favlist-followers">
+               94,303 人关注 
+             </div> 
+            </div> 
+            <div class="AnswerInfo-favlist" data-za-detail-view-path-module="CollectionItem" data-za-extra-module="{&quot;card&quot;:{&quot;content&quot;:{&quot;type&quot;:&quot;Collection&quot;,&quot;token&quot;:&quot;34173061&quot;,&quot;follower_num&quot;:38124,&quot;author_member_hash_id&quot;:&quot;ac5860a0000ac307eda1c957a4a23643&quot;}}}"> 
+             <div class="AnswerInfo-favlist-title"> 
+              <a title="赞同超3k的回答" class="Button Button--plain" href="/collection/34173061" target="_blank" type="button" data-za-detail-view-element_name="Collection">赞同超3k的回答</a> 
+             </div> 
+             <div class="AnswerInfo-favlist-author"> 
+              <span class="UserLink"><a class="UserLink-link" href="//www.zhihu.com/people/zhihudianxiaoer" target="_blank" data-za-detail-view-element_name="Author">江湖人称向前兄</a></span> 创建 
+             </div> 
+             <div class="AnswerInfo-favlist-followers">
+               38,124 人关注 
+             </div> 
+            </div> 
+            <div class="AnswerInfo-favlist" data-za-detail-view-path-module="CollectionItem" data-za-extra-module="{&quot;card&quot;:{&quot;content&quot;:{&quot;type&quot;:&quot;Collection&quot;,&quot;token&quot;:&quot;118261499&quot;,&quot;follower_num&quot;:17410,&quot;author_member_hash_id&quot;:&quot;ad60131dd1b9474e4a5c84ddfdbc8498&quot;}}}"> 
+             <div class="AnswerInfo-favlist-title"> 
+              <a title="知乎实时热门" class="Button Button--plain" href="/collection/118261499" target="_blank" type="button" data-za-detail-view-element_name="Collection">知乎实时热门</a> 
+             </div> 
+             <div class="AnswerInfo-favlist-author"> 
+              <span class="UserLink">知乎用户</span> 创建 
+             </div> 
+             <div class="AnswerInfo-favlist-followers">
+               17,410 人关注 
+             </div> 
+            </div> 
+            <div class="AnswerInfo-favlist" data-za-detail-view-path-module="CollectionItem" data-za-extra-module="{&quot;card&quot;:{&quot;content&quot;:{&quot;type&quot;:&quot;Collection&quot;,&quot;token&quot;:&quot;20069329&quot;,&quot;follower_num&quot;:7946,&quot;author_member_hash_id&quot;:&quot;bfb035cf64b7fb8bbc3e8d24c2992ff7&quot;}}}"> 
+             <div class="AnswerInfo-favlist-title"> 
+              <a title="亲历者说" class="Button Button--plain" href="/collection/20069329" target="_blank" type="button" data-za-detail-view-element_name="Collection">亲历者说</a> 
+             </div> 
+             <div class="AnswerInfo-favlist-author"> 
+              <span class="UserLink"><a class="UserLink-link" href="//www.zhihu.com/people/zhao-fu-feng" target="_blank" data-za-detail-view-element_name="Author">赵扶风</a></span> 创建 
+             </div> 
+             <div class="AnswerInfo-favlist-followers">
+               7,946 人关注 
+             </div> 
+            </div> 
+           </div> 
+          </div> 
+          <div class="Card" data-za-detail-view-path-module="RelatedQuestions" data-za-extra-module="{&quot;card&quot;:{&quot;content&quot;:null}}"> 
+           <div class="Card-header SimilarQuestions-title"> 
+            <div class="Card-headerText">
+              相关问题 
+            </div> 
+           </div> 
+           <div class="Card-section SimilarQuestions-list"> 
+            <div class="SimilarQuestions-item" itemscope="" itemprop="zhihu:similarQuestion" itemtype="http://schema.org/Question" data-za-detail-view-path-module="QuestionItem" data-za-extra-module="{&quot;card&quot;:{&quot;content&quot;:{&quot;type&quot;:&quot;Question&quot;,&quot;token&quot;:&quot;67080789&quot;,&quot;author_member_hash_id&quot;:&quot;db2d53fe9ca8cc9885658c09e8f9a147&quot;}}}"> 
+             <meta content="哪些瞬间让你发现贫穷限制了你的想象力？" itemprop="name" /> 
+             <meta content="https://www.zhihu.com/question/67080789" itemprop="url" /> 
+             <meta content="7563" itemprop="answerCount" /> 
+             <meta content="112434" itemprop="zhihu:followerCount" /> 
+             <a class="Button Button--plain" href="/question/67080789" target="_blank" type="button">哪些瞬间让你发现贫穷限制了你的想象力？</a> 7,563 个回答 
+            </div> 
+            <div class="SimilarQuestions-item" itemscope="" itemprop="zhihu:similarQuestion" itemtype="http://schema.org/Question" data-za-detail-view-path-module="QuestionItem" data-za-extra-module="{&quot;card&quot;:{&quot;content&quot;:{&quot;type&quot;:&quot;Question&quot;,&quot;token&quot;:&quot;266790835&quot;,&quot;author_member_hash_id&quot;:&quot;9eed7bf798ca3b02ebc042179a575434&quot;}}}"> 
+             <meta content="哪一瞬间让你发现地域限制了你的想象力？" itemprop="name" /> 
+             <meta content="https://www.zhihu.com/question/266790835" itemprop="url" /> 
+             <meta content="30" itemprop="answerCount" /> 
+             <meta content="24" itemprop="zhihu:followerCount" /> 
+             <a class="Button Button--plain" href="/question/266790835" target="_blank" type="button">哪一瞬间让你发现地域限制了你的想象力？</a> 30 个回答 
+            </div> 
+            <div class="SimilarQuestions-item" itemscope="" itemprop="zhihu:similarQuestion" itemtype="http://schema.org/Question" data-za-detail-view-path-module="QuestionItem" data-za-extra-module="{&quot;card&quot;:{&quot;content&quot;:{&quot;type&quot;:&quot;Question&quot;,&quot;token&quot;:&quot;267206850&quot;,&quot;author_member_hash_id&quot;:&quot;f38017f1c05deb86b7829c2ccf681890&quot;}}}"> 
+             <meta content="生活在中国什么限制了你的想象力？" itemprop="name" /> 
+             <meta content="https://www.zhihu.com/question/267206850" itemprop="url" /> 
+             <meta content="36" itemprop="answerCount" /> 
+             <meta content="228" itemprop="zhihu:followerCount" /> 
+             <a class="Button Button--plain" href="/question/267206850" target="_blank" type="button">生活在中国什么限制了你的想象力？</a> 36 个回答 
+            </div> 
+            <div class="SimilarQuestions-item" itemscope="" itemprop="zhihu:similarQuestion" itemtype="http://schema.org/Question" data-za-detail-view-path-module="QuestionItem" data-za-extra-module="{&quot;card&quot;:{&quot;content&quot;:{&quot;type&quot;:&quot;Question&quot;,&quot;token&quot;:&quot;67605586&quot;,&quot;author_member_hash_id&quot;:&quot;b4271feef43a9d2c0283d1022b477422&quot;}}}"> 
+             <meta content="哪些瞬间让你发现富有限制了你的想象力？" itemprop="name" /> 
+             <meta content="https://www.zhihu.com/question/67605586" itemprop="url" /> 
+             <meta content="116" itemprop="answerCount" /> 
+             <meta content="869" itemprop="zhihu:followerCount" /> 
+             <a class="Button Button--plain" href="/question/67605586" target="_blank" type="button">哪些瞬间让你发现富有限制了你的想象力？</a> 116 个回答 
+            </div> 
+            <div class="SimilarQuestions-item" itemscope="" itemprop="zhihu:similarQuestion" itemtype="http://schema.org/Question" data-za-detail-view-path-module="QuestionItem" data-za-extra-module="{&quot;card&quot;:{&quot;content&quot;:{&quot;type&quot;:&quot;Question&quot;,&quot;token&quot;:&quot;42249684&quot;,&quot;author_member_hash_id&quot;:&quot;78c6829cd24b40247561312806653c0d&quot;}}}"> 
+             <meta content="我们的想象力是怎样被扼杀的？" itemprop="name" /> 
+             <meta content="https://www.zhihu.com/question/42249684" itemprop="url" /> 
+             <meta content="32" itemprop="answerCount" /> 
+             <meta content="100" itemprop="zhihu:followerCount" /> 
+             <a class="Button Button--plain" href="/question/42249684" target="_blank" type="button">我们的想象力是怎样被扼杀的？</a> 32 个回答 
+            </div> 
+           </div> 
+          </div> 
+          <div class="Card" data-za-detail-view-path-module="ContentList" data-za-extra-module="{&quot;card&quot;:{&quot;content&quot;:null}}" data-za-detail-view-path-module_name="相关推荐"> 
+           <div class="Card-header RelatedCommodities-title"> 
+            <div class="Card-headerText">
+              相关推荐 
+            </div> 
+           </div> 
+           <div class="Card-section RelatedCommodities-list"> 
+            <a class="Button RelatedCommodities-item Button--plain" href="/lives/871682476962086912" target="_blank" type="button" data-za-detail-view-path-module="LiveItem" data-za-extra-module="{&quot;card&quot;:{&quot;content&quot;:{&quot;type&quot;:&quot;Live&quot;,&quot;id&quot;:&quot;871682476962086912&quot;,&quot;author_member_hash_id&quot;:&quot;ff55dcd0f33e8f5de77fbc3bb694f13b&quot;}}}"><img class="RelatedCommodities-image" alt="live" src="https://pic4.zhimg.com/90/v2-1d10287714f03bc3e603a2c96521229b_250x0.jpg" /> 
+             <div class="RelatedCommodities-content"> 
+              <div class="RelatedCommodities-subject">
+                英文标点趣谈(上) 
+              </div> 
+              <div class="RelatedCommodities-description">
+                栗子 
+              </div> 
+              <div class="RelatedCommodities-meta"> 
+               <div class="RelatedCommodities-scoreWrapper"> 
+                <div class="Rating"> 
+                 <svg xmlns="http://www.w3.org/2000/svg" class="Icon Icon--rating" aria-hidden="true" style="width: 15px; height: 15px; margin-left: 0px;" viewbox="0 0 15 15" width="15" height="15"> 
+                  <title></title> 
+                  <g> 
+                   <g fill-rule="evenodd"> 
+                    <path fill="#ffab2e" d="M 10.925 14.302 c 0.173 0.13 0.408 0.13 0.58 -0.002 c 0.174 -0.13 0.244 -0.362 0.175 -0.572 l -1.323 -4.296 l 3.435 -2.456 c 0.175 -0.13 0.25 -0.36 0.185 -0.572 c -0.064 -0.212 -0.253 -0.357 -0.468 -0.36 H 9.275 L 7.96 1.754 c -0.064 -0.21 -0.21 -0.354 -0.46 -0.354 c -0.14 0 -1.027 3.53 -0.988 6.32 c 0.04 2.788 0.98 3.85 0.98 3.85 l 3.433 2.732 Z" /> 
+                    <path fill="#ffab2e" d="M 7.5 1.4 c -0.25 0 -0.41 0.144 -0.474 0.354 l -1.318 4.29 H 1.49 c -0.214 0.003 -0.403 0.148 -0.467 0.36 c -0.065 0.212 0.01 0.442 0.185 0.572 l 3.42 2.463 l -1.307 4.286 c -0.066 0.21 0.004 0.44 0.176 0.572 c 0.172 0.13 0.407 0.132 0.58 0.003 l 3.42 -2.734 L 7.5 1.4 Z"> 
+                    </path> 
+                   </g> 
+                  </g> 
+                 </svg> 
+                 <svg xmlns="http://www.w3.org/2000/svg" class="Icon Icon--rating" aria-hidden="true" style="width: 15px; height: 15px; margin-left: 0px;" viewbox="0 0 15 15" width="15" height="15"> 
+                  <title></title> 
+                  <g> 
+                   <g fill-rule="evenodd"> 
+                    <path fill="#ffab2e" d="M 10.925 14.302 c 0.173 0.13 0.408 0.13 0.58 -0.002 c 0.174 -0.13 0.244 -0.362 0.175 -0.572 l -1.323 -4.296 l 3.435 -2.456 c 0.175 -0.13 0.25 -0.36 0.185 -0.572 c -0.064 -0.212 -0.253 -0.357 -0.468 -0.36 H 9.275 L 7.96 1.754 c -0.064 -0.21 -0.21 -0.354 -0.46 -0.354 c -0.14 0 -1.027 3.53 -0.988 6.32 c 0.04 2.788 0.98 3.85 0.98 3.85 l 3.433 2.732 Z" /> 
+                    <path fill="#ffab2e" d="M 7.5 1.4 c -0.25 0 -0.41 0.144 -0.474 0.354 l -1.318 4.29 H 1.49 c -0.214 0.003 -0.403 0.148 -0.467 0.36 c -0.065 0.212 0.01 0.442 0.185 0.572 l 3.42 2.463 l -1.307 4.286 c -0.066 0.21 0.004 0.44 0.176 0.572 c 0.172 0.13 0.407 0.132 0.58 0.003 l 3.42 -2.734 L 7.5 1.4 Z"> 
+                    </path> 
+                   </g> 
+                  </g> 
+                 </svg> 
+                 <svg xmlns="http://www.w3.org/2000/svg" class="Icon Icon--rating" aria-hidden="true" style="width: 15px; height: 15px; margin-left: 0px;" viewbox="0 0 15 15" width="15" height="15"> 
+                  <title></title> 
+                  <g> 
+                   <g fill-rule="evenodd"> 
+                    <path fill="#ffab2e" d="M 10.925 14.302 c 0.173 0.13 0.408 0.13 0.58 -0.002 c 0.174 -0.13 0.244 -0.362 0.175 -0.572 l -1.323 -4.296 l 3.435 -2.456 c 0.175 -0.13 0.25 -0.36 0.185 -0.572 c -0.064 -0.212 -0.253 -0.357 -0.468 -0.36 H 9.275 L 7.96 1.754 c -0.064 -0.21 -0.21 -0.354 -0.46 -0.354 c -0.14 0 -1.027 3.53 -0.988 6.32 c 0.04 2.788 0.98 3.85 0.98 3.85 l 3.433 2.732 Z" /> 
+                    <path fill="#ffab2e" d="M 7.5 1.4 c -0.25 0 -0.41 0.144 -0.474 0.354 l -1.318 4.29 H 1.49 c -0.214 0.003 -0.403 0.148 -0.467 0.36 c -0.065 0.212 0.01 0.442 0.185 0.572 l 3.42 2.463 l -1.307 4.286 c -0.066 0.21 0.004 0.44 0.176 0.572 c 0.172 0.13 0.407 0.132 0.58 0.003 l 3.42 -2.734 L 7.5 1.4 Z"> 
+                    </path> 
+                   </g> 
+                  </g> 
+                 </svg> 
+                 <svg xmlns="http://www.w3.org/2000/svg" class="Icon Icon--rating" aria-hidden="true" style="width: 15px; height: 15px; margin-left: 0px;" viewbox="0 0 15 15" width="15" height="15"> 
+                  <title></title> 
+                  <g> 
+                   <g fill-rule="evenodd"> 
+                    <path fill="#ffab2e" d="M 10.925 14.302 c 0.173 0.13 0.408 0.13 0.58 -0.002 c 0.174 -0.13 0.244 -0.362 0.175 -0.572 l -1.323 -4.296 l 3.435 -2.456 c 0.175 -0.13 0.25 -0.36 0.185 -0.572 c -0.064 -0.212 -0.253 -0.357 -0.468 -0.36 H 9.275 L 7.96 1.754 c -0.064 -0.21 -0.21 -0.354 -0.46 -0.354 c -0.14 0 -1.027 3.53 -0.988 6.32 c 0.04 2.788 0.98 3.85 0.98 3.85 l 3.433 2.732 Z" /> 
+                    <path fill="#ffab2e" d="M 7.5 1.4 c -0.25 0 -0.41 0.144 -0.474 0.354 l -1.318 4.29 H 1.49 c -0.214 0.003 -0.403 0.148 -0.467 0.36 c -0.065 0.212 0.01 0.442 0.185 0.572 l 3.42 2.463 l -1.307 4.286 c -0.066 0.21 0.004 0.44 0.176 0.572 c 0.172 0.13 0.407 0.132 0.58 0.003 l 3.42 -2.734 L 7.5 1.4 Z"> 
+                    </path> 
+                   </g> 
+                  </g> 
+                 </svg> 
+                 <svg xmlns="http://www.w3.org/2000/svg" class="Icon Icon--rating" aria-hidden="true" style="width: 15px; height: 15px; margin-left: 0px;" viewbox="0 0 15 15" width="15" height="15"> 
+                  <title></title> 
+                  <g> 
+                   <g fill-rule="evenodd"> 
+                    <path fill="#ffab2e" d="M 10.925 14.302 c 0.173 0.13 0.408 0.13 0.58 -0.002 c 0.174 -0.13 0.244 -0.362 0.175 -0.572 l -1.323 -4.296 l 3.435 -2.456 c 0.175 -0.13 0.25 -0.36 0.185 -0.572 c -0.064 -0.212 -0.253 -0.357 -0.468 -0.36 H 9.275 L 7.96 1.754 c -0.064 -0.21 -0.21 -0.354 -0.46 -0.354 c -0.14 0 -1.027 3.53 -0.988 6.32 c 0.04 2.788 0.98 3.85 0.98 3.85 l 3.433 2.732 Z" /> 
+                    <path fill="#ffab2e" d="M 7.5 1.4 c -0.25 0 -0.41 0.144 -0.474 0.354 l -1.318 4.29 H 1.49 c -0.214 0.003 -0.403 0.148 -0.467 0.36 c -0.065 0.212 0.01 0.442 0.185 0.572 l 3.42 2.463 l -1.307 4.286 c -0.066 0.21 0.004 0.44 0.176 0.572 c 0.172 0.13 0.407 0.132 0.58 0.003 l 3.42 -2.734 L 7.5 1.4 Z"> 
+                    </path> 
+                   </g> 
+                  </g> 
+                 </svg> 
+                </div>90 人参与 
+               </div> 
+              </div> 
+             </div></a> 
+            <a class="Button RelatedCommodities-item Button--plain" href="/lives/921745792421724160" target="_blank" type="button" data-za-detail-view-path-module="LiveItem" data-za-extra-module="{&quot;card&quot;:{&quot;content&quot;:{&quot;type&quot;:&quot;Live&quot;,&quot;id&quot;:&quot;921745792421724160&quot;,&quot;author_member_hash_id&quot;:&quot;787e7f41daebda5590dc12c2fcb34c71&quot;}}}"><img class="RelatedCommodities-image" alt="live" src="https://pic2.zhimg.com/90/v2-bddcdecb9240bf9ddd3881e9cede3ee6_250x0.jpg" /> 
+             <div class="RelatedCommodities-content"> 
+              <div class="RelatedCommodities-subject RelatedCommodities-subject-two">
+                服装设计，别让“贫穷”限制你的想象力 
+              </div> 
+              <div class="RelatedCommodities-meta"> 
+               <div class="RelatedCommodities-scoreWrapper"> 
+                <div class="Rating"> 
+                 <svg xmlns="http://www.w3.org/2000/svg" class="Icon Icon--rating" aria-hidden="true" style="width: 15px; height: 15px; margin-left: 0px;" viewbox="0 0 15 15" width="15" height="15"> 
+                  <title></title> 
+                  <g> 
+                   <g fill-rule="evenodd"> 
+                    <path fill="#ffab2e" d="M 10.925 14.302 c 0.173 0.13 0.408 0.13 0.58 -0.002 c 0.174 -0.13 0.244 -0.362 0.175 -0.572 l -1.323 -4.296 l 3.435 -2.456 c 0.175 -0.13 0.25 -0.36 0.185 -0.572 c -0.064 -0.212 -0.253 -0.357 -0.468 -0.36 H 9.275 L 7.96 1.754 c -0.064 -0.21 -0.21 -0.354 -0.46 -0.354 c -0.14 0 -1.027 3.53 -0.988 6.32 c 0.04 2.788 0.98 3.85 0.98 3.85 l 3.433 2.732 Z" /> 
+                    <path fill="#ffab2e" d="M 7.5 1.4 c -0.25 0 -0.41 0.144 -0.474 0.354 l -1.318 4.29 H 1.49 c -0.214 0.003 -0.403 0.148 -0.467 0.36 c -0.065 0.212 0.01 0.442 0.185 0.572 l 3.42 2.463 l -1.307 4.286 c -0.066 0.21 0.004 0.44 0.176 0.572 c 0.172 0.13 0.407 0.132 0.58 0.003 l 3.42 -2.734 L 7.5 1.4 Z"> 
+                    </path> 
+                   </g> 
+                  </g> 
+                 </svg> 
+                 <svg xmlns="http://www.w3.org/2000/svg" class="Icon Icon--rating" aria-hidden="true" style="width: 15px; height: 15px; margin-left: 0px;" viewbox="0 0 15 15" width="15" height="15"> 
+                  <title></title> 
+                  <g> 
+                   <g fill-rule="evenodd"> 
+                    <path fill="#ffab2e" d="M 10.925 14.302 c 0.173 0.13 0.408 0.13 0.58 -0.002 c 0.174 -0.13 0.244 -0.362 0.175 -0.572 l -1.323 -4.296 l 3.435 -2.456 c 0.175 -0.13 0.25 -0.36 0.185 -0.572 c -0.064 -0.212 -0.253 -0.357 -0.468 -0.36 H 9.275 L 7.96 1.754 c -0.064 -0.21 -0.21 -0.354 -0.46 -0.354 c -0.14 0 -1.027 3.53 -0.988 6.32 c 0.04 2.788 0.98 3.85 0.98 3.85 l 3.433 2.732 Z" /> 
+                    <path fill="#ffab2e" d="M 7.5 1.4 c -0.25 0 -0.41 0.144 -0.474 0.354 l -1.318 4.29 H 1.49 c -0.214 0.003 -0.403 0.148 -0.467 0.36 c -0.065 0.212 0.01 0.442 0.185 0.572 l 3.42 2.463 l -1.307 4.286 c -0.066 0.21 0.004 0.44 0.176 0.572 c 0.172 0.13 0.407 0.132 0.58 0.003 l 3.42 -2.734 L 7.5 1.4 Z"> 
+                    </path> 
+                   </g> 
+                  </g> 
+                 </svg> 
+                 <svg xmlns="http://www.w3.org/2000/svg" class="Icon Icon--rating" aria-hidden="true" style="width: 15px; height: 15px; margin-left: 0px;" viewbox="0 0 15 15" width="15" height="15"> 
+                  <title></title> 
+                  <g> 
+                   <g fill-rule="evenodd"> 
+                    <path fill="#ffab2e" d="M 10.925 14.302 c 0.173 0.13 0.408 0.13 0.58 -0.002 c 0.174 -0.13 0.244 -0.362 0.175 -0.572 l -1.323 -4.296 l 3.435 -2.456 c 0.175 -0.13 0.25 -0.36 0.185 -0.572 c -0.064 -0.212 -0.253 -0.357 -0.468 -0.36 H 9.275 L 7.96 1.754 c -0.064 -0.21 -0.21 -0.354 -0.46 -0.354 c -0.14 0 -1.027 3.53 -0.988 6.32 c 0.04 2.788 0.98 3.85 0.98 3.85 l 3.433 2.732 Z" /> 
+                    <path fill="#ffab2e" d="M 7.5 1.4 c -0.25 0 -0.41 0.144 -0.474 0.354 l -1.318 4.29 H 1.49 c -0.214 0.003 -0.403 0.148 -0.467 0.36 c -0.065 0.212 0.01 0.442 0.185 0.572 l 3.42 2.463 l -1.307 4.286 c -0.066 0.21 0.004 0.44 0.176 0.572 c 0.172 0.13 0.407 0.132 0.58 0.003 l 3.42 -2.734 L 7.5 1.4 Z"> 
+                    </path> 
+                   </g> 
+                  </g> 
+                 </svg> 
+                 <svg xmlns="http://www.w3.org/2000/svg" class="Icon Icon--rating" aria-hidden="true" style="width: 15px; height: 15px; margin-left: 0px;" viewbox="0 0 15 15" width="15" height="15"> 
+                  <title></title> 
+                  <g> 
+                   <g fill-rule="evenodd"> 
+                    <path fill="#ffab2e" d="M 10.925 14.302 c 0.173 0.13 0.408 0.13 0.58 -0.002 c 0.174 -0.13 0.244 -0.362 0.175 -0.572 l -1.323 -4.296 l 3.435 -2.456 c 0.175 -0.13 0.25 -0.36 0.185 -0.572 c -0.064 -0.212 -0.253 -0.357 -0.468 -0.36 H 9.275 L 7.96 1.754 c -0.064 -0.21 -0.21 -0.354 -0.46 -0.354 c -0.14 0 -1.027 3.53 -0.988 6.32 c 0.04 2.788 0.98 3.85 0.98 3.85 l 3.433 2.732 Z" /> 
+                    <path fill="#ffab2e" d="M 7.5 1.4 c -0.25 0 -0.41 0.144 -0.474 0.354 l -1.318 4.29 H 1.49 c -0.214 0.003 -0.403 0.148 -0.467 0.36 c -0.065 0.212 0.01 0.442 0.185 0.572 l 3.42 2.463 l -1.307 4.286 c -0.066 0.21 0.004 0.44 0.176 0.572 c 0.172 0.13 0.407 0.132 0.58 0.003 l 3.42 -2.734 L 7.5 1.4 Z"> 
+                    </path> 
+                   </g> 
+                  </g> 
+                 </svg> 
+                 <svg xmlns="http://www.w3.org/2000/svg" class="Icon Icon--ratingHalf" aria-hidden="true" style="width: 15px; height: 15px; margin-left: 0px;" viewbox="0 0 15 15" width="15" height="15"> 
+                  <title></title> 
+                  <g> 
+                   <g fill-rule="evenodd"> 
+                    <path fill="#d7d8d9" d="M 10.925 14.302 c 0.173 0.13 0.408 0.13 0.58 -0.002 c 0.174 -0.13 0.244 -0.362 0.175 -0.572 l -1.323 -4.296 l 3.435 -2.456 c 0.175 -0.13 0.25 -0.36 0.185 -0.572 c -0.064 -0.212 -0.253 -0.357 -0.468 -0.36 H 9.275 L 7.96 1.754 c -0.064 -0.21 -0.21 -0.354 -0.46 -0.354 c -0.14 0 -1.027 3.53 -0.988 6.32 c 0.04 2.788 0.98 3.85 0.98 3.85 l 3.433 2.732 Z" /> 
+                    <path fill="#ffab2e" d="M 7.5 1.4 c -0.25 0 -0.41 0.144 -0.474 0.354 l -1.318 4.29 H 1.49 c -0.214 0.003 -0.403 0.148 -0.467 0.36 c -0.065 0.212 0.01 0.442 0.185 0.572 l 3.42 2.463 l -1.307 4.286 c -0.066 0.21 0.004 0.44 0.176 0.572 c 0.172 0.13 0.407 0.132 0.58 0.003 l 3.42 -2.734 L 7.5 1.4 Z" /> 
+                   </g> 
+                  </g> 
+                 </svg> 
+                </div>240 人参与 
+               </div> 
+              </div> 
+             </div></a> 
+            <a class="Button RelatedCommodities-item Button--plain" href="/pub/book/119554257" target="_blank" type="button" data-za-detail-view-path-module="EBookItem" data-za-extra-module="{&quot;card&quot;:{&quot;content&quot;:{&quot;type&quot;:&quot;EBook&quot;,&quot;token&quot;:&quot;119554257&quot;}}}"><img class="RelatedCommodities-image" alt="live" src="https://pic4.zhimg.com/90/v2-2937c63ef68316ac37c874e309e44075_250x0.jpg" /> 
+             <div class="RelatedCommodities-content"> 
+              <div class="RelatedCommodities-subject">
+                艺术是可以教的 
+              </div> 
+              <div class="RelatedCommodities-description">
+                谢森 
+              </div> 
+              <div class="RelatedCommodities-meta"> 
+               <div class="RelatedCommodities-bookMeta">
+                 5,303 人读过 
+                <span class="RelatedCommodities-bookRead"><span style="display: inline-flex; align-items: center;">​ 
+                  <svg xmlns="http://www.w3.org/2000/svg" class="Zi Zi--Ebook" fill="currentColor" viewbox="0 0 24 24" width="13" height="14"> 
+                   <path fill-rule="evenodd" d="M 16 17.649 V 2.931 a 0.921 0.921 0 0 0 -0.045 -0.283 a 0.943 0.943 0 0 0 -1.182 -0.604 L 4.655 5.235 A 0.932 0.932 0 0 0 4 6.122 v 14.947 c 0 0.514 0.421 0.931 0.941 0.931 H 19.06 c 0.52 0 0.941 -0.417 0.941 -0.93 V 7.292 a 0.936 0.936 0 0 0 -0.941 -0.931 h -0.773 v 12.834 a 0.934 0.934 0 0 1 -0.83 0.924 L 6.464 21.416 c -0.02 0.002 2.94 -0.958 8.883 -2.881 a 0.932 0.932 0 0 0 0.653 -0.886 Z" /> 
+                  </svg></span>阅读</span> 
+               </div> 
+              </div>  
+             </div></a> 
+           </div> 
+          </div> 
+          <div class="Card Banner" data-za-detail-view-path-module="ExternalAdItem" data-za-extra-module="{&quot;card&quot;:{&quot;content&quot;:{&quot;type&quot;:&quot;ExternalAd&quot;,&quot;ad_info&quot;:{&quot;ad_id&quot;:13124,&quot;ad_zone_id&quot;:4,&quot;category&quot;:&quot;1&quot;,&quot;timestamp&quot;:1524920700}}}}" data-za-detail-view-path-is_ad="true"> 
+           <a class="Button Banner-link Button--plain" href="https://sugar.zhihu.com/track?di=&amp;lu=&amp;ut=c6917997013a438d9a7e2dfb93f1ef1b&amp;xs=&amp;za=&amp;vs=2&amp;ai=13124&amp;ci=14044&amp;nt=&amp;au=203&amp;tu=aHR0cHM6Ly9jbGlja2MuYWRtYXN0ZXIuY29tLmNuL2MvYTEwNTg0OSxiMjQzMzQzNixjMTg4MyxpMCxtMTAxLDhhMSw4YjIsaA%3D%3D&amp;sg=91745d8bcdd78c869e1103ed4f475aa1&amp;lr=0&amp;ar=0.00&amp;cv=&amp;st=ctr%23HistoryStratege%23&amp;az=4&amp;si=d103052b-7904-469e-b230-338eb77903ef&amp;at=click&amp;pn=&amp;ts=1524920758&amp;pf=Windows&amp;hn=glory-adtrigger--104-0decbf2d-4289111572-fhn4b&amp;ui=183.236.19.168" target="_blank" type="button"><img class="Banner-image" alt="广告" src="https://pic2.zhimg.com/v2-5a394851432eb3b5e0f60dd044ff408d_294x245|adx4.jpg" srcset="https://pic2.zhimg.com/v2-5a394851432eb3b5e0f60dd044ff408d_540x450|adx4.jpg 2x" /></a> 
+           <button class="Button Banner-close Button--plain" type="button" data-tooltip="不再显示" data-tooltip-position="bottom"> 
+            <svg xmlns="http://www.w3.org/2000/svg" class="Icon Icon--boldRemove" aria-hidden="true" style="width: 14px; height: 16px;" viewbox="0 0 12 12" width="14" height="16"> 
+             <title></title> 
+             <g> 
+              <path fill-rule="evenodd" d="M 3 2 L 2 3 l 3 3 l -3 3 l 1 1 l 3 -3 l 3 3 l 1 -1 l -3 -3 l 3 -3 l -1 -1 l -3 3" /> 
+             </g> 
+            </svg></button> 
+          </div> 
+          <footer class="Footer"> 
+           <a class="Footer-item" href="//liukanshan.zhihu.com/" target="_blank" rel="noopener noreferrer">刘看山</a> 
+           <span class="Footer-dot"></span> 
+           <a class="Footer-item" href="/question/19581624" target="_blank" rel="noopener noreferrer">知乎指南</a> 
+           <span class="Footer-dot"></span> 
+           <a class="Footer-item" href="/terms" target="_blank" rel="noopener noreferrer">知乎协议</a> 
+           <span class="Footer-dot"></span> 
+           <a class="Footer-item" href="/terms/privacy" target="_blank" rel="noopener noreferrer">隐私政策</a> 
+           <br /> 
+           <a class="Footer-item" href="/app" target="_blank">应用</a> 
+           <span class="Footer-dot"></span> 
+           <a class="Footer-item" href="/careers" target="_blank">工作</a> 
+           <span class="Footer-dot"></span> 
+           <button class="Button OrgCreateButton" type="button">申请开通知乎机构号</button> 
+           <br /> 
+           <a class="Footer-item" href="https://zhuanlan.zhihu.com/p/28561671" target="_blank" rel="noopener noreferrer">侵权举报</a> 
+           <span class="Footer-dot"></span> 
+           <a class="Footer-item" href="http://www.12377.cn" target="_blank" rel="noopener noreferrer">网上有害信息举报专区</a> 
+           <br /> 
+           <span class="Footer-item">违法和不良信息举报：010-82716601</span> 
+           <br /> 
+           <a class="Footer-item" href="/jubao" target="_blank">儿童色情信息举报专区</a> 
+           <br /> 
+           <a class="Footer-item" href="/contact" target="_blank">联系我们</a> 
+           <span> &copy; 2018 知乎</span> 
+          </footer> 
+         </div> 
+         <div class="Sticky--holder" style="margin: 0px; left: auto; top: auto; height: 1900.26px; right: auto; bottom: auto; display: block; position: static; float: none;"></div> 
+        </div> 
+       </div> 
+      </div> 
+     </div> 
+    </main> 
+   </div> 
+  </div>  
+  <div id="data" style="display:none" data-state="{&quot;author&quot;:{&quot;id&quot;:{{.answer.Author.ID}},&quot;url_token&quot;:&quot;{{.answer.Author.URLToken}}&quot;,&quot;gender&quot;:{{.answer.Author.Gender}},&quot;is_followed&quot;:{{.answer.Author.Followed}},&quot;follower_count&quot;:{{.answer.Author.FollowerCount}},&quot;answer_count&quot;:{{.answer.Author.AnswerCount}}}}"></div>
+  <script src="/static/heifetz/vote.js"></script>
+ </body>
+</html>
