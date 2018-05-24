@@ -56,8 +56,10 @@ CREATE TABLE answers (
     modified_at datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
     marked_count int(11) unsigned DEFAULT 0,
     comment_count int(11) unsigned DEFAULT 0,
-    PRIMARY KEY (id)
-);
+    is_deleted tinyint(1) DEFAULT 0,
+    PRIMARY KEY (id),
+    UNIQUE (question_id, user_id)
+) DEFAULT CHARSET=utf8;
     
 #---------------------------------------------------------
 
@@ -91,7 +93,7 @@ CREATE TABLE answer_comments (
     created_at datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
     content longtext,
     PRIMARY KEY (id)
-);
+) DEFAULT CHARSET=utf8;
 
 #--------------------------------------------------------
 
@@ -104,7 +106,7 @@ CREATE TABLE question_comments (
     created_at datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
     content longtext,
     PRIMARY KEY (id)
-);
+) DEFAULT CHARSET=utf8;  
 
 #--------------------------------------------------------
 

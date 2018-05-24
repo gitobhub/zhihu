@@ -8,7 +8,7 @@ import (
 
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
-	"zhihu/models"
+	"github.com/gitobhub/zhihu/models"
 )
 
 type VoteType struct {
@@ -25,11 +25,11 @@ func VoteAnswer(c *gin.Context) {
 		return
 	}
 
-	user, _ := models.Visitor(c)
+	user, _ := Visitor(c)
 	if user == nil {
 		println("user unsigned to vote")
-		c.JSON(http.StatusOK, gin.H{
-			"succeed": succeed,
+		c.JSON(http.StatusForbidden, gin.H{
+			"success": succeed,
 		})
 		return
 	}
@@ -39,7 +39,7 @@ func VoteAnswer(c *gin.Context) {
 	if err := decoder.Decode(&voteType); err != nil {
 		log.Println(err)
 		c.JSON(http.StatusOK, gin.H{
-			"succeed": succeed,
+			"success": succeed,
 		})
 		return
 	}
@@ -54,7 +54,7 @@ func VoteAnswer(c *gin.Context) {
 	default:
 	}
 	c.JSON(http.StatusOK, gin.H{
-		"succeed": succeed,
+		"success": succeed,
 	})
 }
 
@@ -65,7 +65,7 @@ func AnswerVoters(c *gin.Context) {
 		return
 	}
 
-	_, uid := models.Visitor(c)
+	uid := VisitorID(c)
 	page := &models.Page{
 		Session: sessions.Default(c),
 	}

@@ -70,24 +70,21 @@
        <div class="QuestionButtonGroup"> 
         <button class="Button FollowButton Button--primary {{if .question.Followed}}Button--grey" type="button">已关注{{else}}Button--blue" type="button">关注问题{{end}}</button> 
         {{if .question.Answered}} 
-        <a type="button" class="Button Button--blue" href="/question/{{.question.ID}}/answer/{{.question.VisitorAnswerID}}">
-         <svg class="Zi Zi--Preview QuestionButton-icon" fill="currentColor" viewbox="0 0 24 24" width="17" height="17">
-          <path d="M19.49 14.362l-2.03-1.83 1.116-1.137a1.352 1.352 0 0 1 1.921-.009c.535.535.54 1.4.01 1.94l-1.016 1.036zm-4.883 4.935a2.3 2.3 0 0 1-1.12.63l-1.136.264c-.29.058-.668-.105-.56-.56l.27-1.158a2.3 2.3 0 0 1 .599-1.09l3.809-3.84 2.03 1.829-3.892 3.925zM4.06 5H19.94C20.526 5 21 5.448 21 6s-.474 1-1.059 1H4.06C3.474 7 3 6.552 3 6s.474-1 1.059-1zM4 11h9a1 1 0 0 1 0 2H4a1 1 0 0 1 0-2zm0 6h4a1 1 0 0 1 0 2H4a1 1 0 0 1 0-2z" fill-rule="evenodd"></path>
-         </svg> 查看回答</a> {{else}} 
-        <button class="Button Button--blue" type="button"> 
-         <svg viewbox="0 0 12 12" class="Icon Button-icon Icon--modify" style="height:16px;width:14px" width="14" height="16" aria-hidden="true"> 
-          <title></title> 
-          <g> 
-           <path d="M.423 10.32L0 12l1.667-.474 1.55-.44-2.4-2.33-.394 1.564zM10.153.233c-.327-.318-.85-.31-1.17.018l-.793.817 2.49 2.414.792-.814c.318-.328.312-.852-.017-1.17l-1.3-1.263zM3.84 10.536L1.35 8.122l6.265-6.46 2.49 2.414-6.265 6.46z" fill-rule="evenodd" /> 
-          </g> 
-         </svg>写回答</button> {{end}} 
+        {{if .question.VisitorAnswerDeleted}}
+        <button type="button" class="Button Button--blue"><svg class="Zi Zi--Undo QuestionButton-icon" fill="currentColor" viewBox="0 0 24 24" width="17" height="17"><path d="M12 9h.009c4.65-.014 8.642 5.096 8.705 9.629 0 .36-.303.461-.592 0-1.474-2.544-3.878-3.862-7.03-3.862h-1.084L12 17.583a.7.7 0 0 1-1.125.556l-7.16-5.478a.7.7 0 0 1-.009-1.105l7.16-5.66a.7.7 0 0 1 1.134.55V9z"></path></svg>撤销删除</button>
+        {{else}}
+        <a type="button" class="Button Button--blue" href="/question/{{.question.ID}}/answer/{{.question.VisitorAnswerID}}"><svg class="Zi Zi--Preview QuestionButton-icon" fill="currentColor" viewbox="0 0 24 24" width="17" height="17"><path d="M19.49 14.362l-2.03-1.83 1.116-1.137a1.352 1.352 0 0 1 1.921-.009c.535.535.54 1.4.01 1.94l-1.016 1.036zm-4.883 4.935a2.3 2.3 0 0 1-1.12.63l-1.136.264c-.29.058-.668-.105-.56-.56l.27-1.158a2.3 2.3 0 0 1 .599-1.09l3.809-3.84 2.03 1.829-3.892 3.925zM4.06 5H19.94C20.526 5 21 5.448 21 6s-.474 1-1.059 1H4.06C3.474 7 3 6.552 3 6s.474-1 1.059-1zM4 11h9a1 1 0 0 1 0 2H4a1 1 0 0 1 0-2zm0 6h4a1 1 0 0 1 0 2H4a1 1 0 0 1 0-2z" fill-rule="evenodd"></path></svg>查看回答</a> 
+         {{end}}
+         {{else}} 
+        <button class="Button Button--blue" type="button"><svg viewbox="0 0 12 12" class="Icon Button-icon Icon--modify" style="height:16px;width:14px" width="14" height="16" aria-hidden="true"><title></title><g><path d="M.423 10.32L0 12l1.667-.474 1.55-.44-2.4-2.33-.394 1.564zM10.153.233c-.327-.318-.85-.31-1.17.018l-.793.817 2.49 2.414.792-.814c.318-.328.312-.852-.017-1.17l-1.3-1.263zM3.84 10.536L1.35 8.122l6.265-6.46 2.49 2.414-6.265 6.46z" fill-rule="evenodd" /></g></svg>写回答</button> 
+        {{end}} 
        </div> 
        <div class="QuestionHeaderActions"> 
         <div class="QuestionHeader-Comment"> 
          <button class="Button Button--plain Button--withIcon Button--withLabel" type="button"><span style="display:inline-flex;align-items:center">​ 
            <svg class="Zi Zi--Comment Button-zi" fill="currentColor" viewbox="0 0 24 24" width="1.2em" height="1.2em"> 
             <path d="M10.241 19.313a.97.97 0 0 0-.77.2 7.908 7.908 0 0 1-3.772 1.482.409.409 0 0 1-.38-.637 5.825 5.825 0 0 0 1.11-2.237.605.605 0 0 0-.227-.59A7.935 7.935 0 0 1 3 11.25C3 6.7 7.03 3 12 3s9 3.7 9 8.25-4.373 9.108-10.759 8.063z" fill-rule="evenodd"></path> 
-           </svg></span>{{if eq .question.CommentCount 0 }}添加评论{{else}}{{.question.CommentCount}} 条评论{{end}}</button> 
+           </svg></span>{{if eq .question.CommentCount 0 }}添加评论{{else}}<span>{{.question.CommentCount}}</span> 条评论{{end}}</button> 
         </div> 
         <div class="Popover ShareMenu"> 
          <div class="" id="null-toggle" aria-haspopup="true" aria-expanded="false" aria-owns="null-content"> 

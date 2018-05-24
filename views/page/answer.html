@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+  <!DOCTYPE html>
 <html lang="zh" data-hairline="true" data-theme="light" data-focus-method="pointer" style="overflow: hidden; margin-bottom: 17px; margin-right: 17px;"> 
   <head> 
   <meta charset="utf-8" /> 
@@ -16,6 +16,7 @@
   <link rel="dns-prefetch" href="//pic3.zhimg.com" /> 
   <link rel="dns-prefetch" href="//pic4.zhimg.com" /> 
   <script src="/static/js/jquery-3.3.1.min.js"></script>
+  <script src="/static/js/jquery.form.js"></script>
   <link href="/static/heifetz/app.css" rel="stylesheet" /> 
   <style type="text/css">.CloseIcon-icon-2xww{transition:opacity .3s ease-out}.CloseIcon-icon-2xww:hover{opacity:.8}</style>
   <style type="text/css">.animations-fadeIn-1aFv{animation:animations-fadeIn-1aFv .3s ease-out both}@keyframes animations-fadeIn-1aFv{0%{opacity:0}to{opacity:1}}.animations-fadeOut-3XSQ{animation:animations-fadeOut-3XSQ .3s ease-out both}@keyframes animations-fadeOut-3XSQ{0%{opacity:1}to{opacity:0}}.animations-fadeInUp-3KKK{animation:animations-fadeInUp-3KKK .3s cubic-bezier(.25,.1,.35,1) both}@keyframes animations-fadeInUp-3KKK{0%{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}.animations-fadeOutDown-r_A_{animation:animations-fadeOutDown-r_A_ .3s cubic-bezier(.25,.1,.35,1) both}@keyframes animations-fadeOutDown-r_A_{0%{transform:translateY(0)}to{opacity:0;transform:translateY(20px)}}</style>
@@ -112,7 +113,7 @@
              <button class="Button ContentItem-action Button--plain Button--withIcon Button--withLabel" type="button"><span style="display:inline-flex;align-items:center">​ 
                <svg class="Zi Zi--Comment Button-zi" fill="currentColor" viewbox="0 0 24 24" width="1.2em" height="1.2em"> 
                 <path d="M10.241 19.313a.97.97 0 0 0-.77.2 7.908 7.908 0 0 1-3.772 1.482.409.409 0 0 1-.38-.637 5.825 5.825 0 0 0 1.11-2.237.605.605 0 0 0-.227-.59A7.935 7.935 0 0 1 3 11.25C3 6.7 7.03 3 12 3s9 3.7 9 8.25-4.373 9.108-10.759 8.063z" fill-rule="evenodd"></path> 
-               </svg></span>{{if eq .answer.CommentCount 0}}添加评论{{else}}{{.answer.CommentCount}} 条评论{{end}}</button> 
+               </svg></span>{{if eq .answer.CommentCount 0}}添加评论{{else}}<span>{{.answer.CommentCount}}</span> 条评论{{end}}</button> 
              <div class="Popover ShareMenu ContentItem-action"> 
               <div class="" id="null-toggle" aria-haspopup="true" aria-expanded="false" aria-owns="null-content"> 
                <button class="Button Button--plain Button--withIcon Button--withLabel" type="button"><span style="display:inline-flex;align-items:center">​ 
@@ -521,7 +522,8 @@
     </main> 
    </div> 
   </div>  
-  <div id="data" style="display:none" data-state="{&quot;author&quot;:{&quot;id&quot;:{{.answer.Author.ID}},&quot;url_token&quot;:&quot;{{.answer.Author.URLToken}}&quot;,&quot;gender&quot;:{{.answer.Author.Gender}},&quot;is_followed&quot;:{{.answer.Author.Followed}},&quot;follower_count&quot;:{{.answer.Author.FollowerCount}},&quot;answer_count&quot;:{{.answer.Author.AnswerCount}}}}"></div>
+  <div id="data" style="display:none" data-state="{{.dataState}}"></div>
+  <script src="/static/heifetz/signflow.js"></script>
   <script src="/static/heifetz/vote.js"></script>
  </body>
 </html>

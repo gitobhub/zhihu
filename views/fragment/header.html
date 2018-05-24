@@ -57,7 +57,11 @@
     <script language='javascript'>
       var user
       {{if .user}}
-      user = {{.user.ID}};
+      user = new Object()
+      user.id = {{.user.ID}}
+      user.avatar_url = {{.user.AvatarURL}}
+      user.url_token = {{.user.URLToken}}
+      user.name = {{.user.Name}}
       {{end}}
       function logout() {
         window.location.

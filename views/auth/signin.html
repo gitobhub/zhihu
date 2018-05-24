@@ -16,8 +16,6 @@
   <link rel="dns-prefetch" href="https://pic3.zhimg.com/" />
   <link rel="dns-prefetch" href="https://pic4.zhimg.com/" />
   <link href="/static/heifetz/app.css" rel="stylesheet" />
-  <script type="text/javascript" charset="utf-8" async="" src="/static/heifetz/richinput.js"></script>
-  <script type="text/javascript" charset="utf-8" async="" src="/static/heifetz/signflow.js"></script>
   <style type="text/css">.CloseIcon-icon-2xww{transition:opacity .3s ease-out}.CloseIcon-icon-2xww:hover{opacity:.8}</style>
   <style type="text/css">.animations-fadeIn-1aFv{animation:animations-fadeIn-1aFv .3s ease-out both}@keyframes animations-fadeIn-1aFv{0%{opacity:0}to{opacity:1}}.animations-fadeOut-3XSQ{animation:animations-fadeOut-3XSQ .3s ease-out both}@keyframes animations-fadeOut-3XSQ{0%{opacity:1}to{opacity:0}}.animations-fadeInUp-3KKK{animation:animations-fadeInUp-3KKK .3s cubic-bezier(.25,.1,.35,1) both}@keyframes animations-fadeInUp-3KKK{0%{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}.animations-fadeOutDown-r_A_{animation:animations-fadeOutDown-r_A_ .3s cubic-bezier(.25,.1,.35,1) both}@keyframes animations-fadeOutDown-r_A_{0%{transform:translateY(0)}to{opacity:0;transform:translateY(20px)}}</style>
   <style type="text/css">.Modal-backdrop-2ksh{background-color:rgba(0,0,0,.65)}.Modal-backdrop-2ksh,.Modal-modalWrapper-56Mq{position:fixed;top:0;right:0;bottom:0;left:0;z-index:10010}.Modal-modalWrapper-56Mq{display:-ms-flexbox;display:flex;-ms-flex-align:center;align-items:center;-ms-flex-pack:center;justify-content:center}.Modal-modal-wf58{position:relative;z-index:10011;background:#fff;border-radius:2px}.Modal-content-3JxL{width:588px;max-height:calc(100vh - 24px * 2);overflow-x:hidden;overflow-y:auto;-webkit-overflow-scrolling:touch}.Modal-closeButton-3JkR{position:absolute;top:4px;right:-44px;padding:12px;width:40px;height:40px;cursor:pointer;box-sizing:border-box;background:none;outline:none;border:none}</style>
@@ -96,22 +94,14 @@
         </div>
         <div class="SignContainer-inner">
          <div class="Login-content"> 
-          <form id="signupForm" action="/signin" method="post" novalidate="" class="SignFlow" data-za-detail-view-path-module="SignInForm" data-za-extra-module="{&quot;card&quot;:{&quot;content&quot;:null}}">
+          <form novalidate="" class="SignFlow" data-za-detail-view-path-module="SignInForm" data-za-extra-module="{&quot;card&quot;:{&quot;content&quot;:null}}">
            <div class="SignFlow-account">
             <div class="SignFlow-supportedCountriesSelectContainer"></div>
             <div class="SignFlowInput SignFlow-accountInputContainer"> 
              <div class="SignFlow-accountInput Input-wrapper"> 
               <input type="text" value="" name="username" class="Input" placeholder="邮箱" /> 
-             </div> 
-             <div>
-              {{if not .message}}
-              {{else}}
-              {{.message}}
-              {{end}}
              </div>
-             <div class="SignFlowInput-errorMask SignFlowInput-requiredErrorMask SignFlowInput-errorMask--hidden">
-              "请输入邮箱"
-             </div> 
+             <div class="SignFlowInput-errorMask SignFlowInput-requiredErrorMask SignFlowInput-errorMask--hidden"></div> 
             </div>
            </div>
            <div class="SignFlow-password">
@@ -237,23 +227,6 @@
     </div>
    </div>
   </div>
-  <script src="/static/heifetz/vendor.js"></script>
-  <script src="/static/heifetz/raven.js" async=""></script>
-  <script src="/static/heifetz/app.js"></script>
-  <script>
-   $(document).ready(function() {
-        // bind 'myForm' and provide a simple callback function
-        $('#signupForm').ajaxForm(function(data) {
-            if(data.succeed){
-                alert("注册成功");
-                window.location.href = "/signin"
-            }else{
-                $("#msg").text(data.message);
-  //              $("#msg").addClass("text-danger");
-            }
-        });
-    });
-  </script>
   <div>
    <div style="display: none;">
     想来知乎工作？请发送邮件到 jobs@zhihu.com
@@ -261,5 +234,8 @@
   </div>
   <span>
    <div></div></span> 
+   <script src="/static/js/jquery-3.3.1.min.js"></script>
+   <script src="/static/js/jquery.form.js"></script>
+  <script src="/static/heifetz/signflow.js"></script>
  </body>
 </html>

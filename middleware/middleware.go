@@ -5,7 +5,7 @@ import (
 
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
-	"zhihu/config"
+	"github.com/gitobhub/zhihu/config"
 )
 
 func SigninRequired() gin.HandlerFunc {
@@ -13,7 +13,9 @@ func SigninRequired() gin.HandlerFunc {
 		sess := sessions.Default(c)
 		userID := sess.Get(config.Server.SessionKey)
 		if userID == nil {
-			c.Redirect(http.StatusForbidden, "/singin")
+			c.JSON(http.StatusForbidden, gin.H{
+				"message": "not authorized",
+			})
 			c.Abort()
 			return
 		}

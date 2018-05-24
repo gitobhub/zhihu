@@ -5,11 +5,11 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"zhihu/models"
+	"github.com/gitobhub/zhihu/models"
 )
 
 func MemberInfo(c *gin.Context) {
-	_, uid := models.Visitor(c)
+	uid := VisitorID(c)
 	urlToken := c.Param("url_token")
 	//include := c.Request.FormValue("include")
 	if urlToken == "" { //|| include == "" {
@@ -46,7 +46,7 @@ func FollowMember(c *gin.Context) {
 		return
 	}
 
-	_, uid := models.Visitor(c)
+	uid := VisitorID(c)
 	succeed := true
 	if err := models.FollowMember(urlToken, uid); err != nil {
 		succeed = false
@@ -64,7 +64,7 @@ func UnfollowMember(c *gin.Context) {
 		return
 	}
 
-	_, uid := models.Visitor(c)
+	uid := VisitorID(c)
 	succeed := true
 	if err := models.UnfollowMember(urlToken, uid); err != nil {
 		succeed = false

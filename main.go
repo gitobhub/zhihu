@@ -3,8 +3,8 @@ package main
 import (
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
-	"zhihu/config"
-	"zhihu/router"
+	"github.com/gitobhub/zhihu/config"
+	"github.com/gitobhub/zhihu/router"
 )
 
 func main() {

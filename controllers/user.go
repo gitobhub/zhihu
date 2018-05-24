@@ -6,28 +6,33 @@ import (
 
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
-	"zhihu/config"
-	"zhihu/models"
+	"github.com/gitobhub/zhihu/config"
+	"github.com/gitobhub/zhihu/models"
 )
 
 func SigninGet(c *gin.Context) {
+	uid := VisitorID(c)
+	if uid != 0 {
+		c.Redirect(http.StatusSeeOther, "/")
+		return
+	}
 	c.HTML(http.StatusOK, "signin.html", nil)
 }
 
 func SigninPost(c *gin.Context) {
 	username := c.Request.FormValue("username") //c.PostForm()
 	password := c.Request.FormValue("password")
-	nextPath := c.PostForm("next")
+	//	nextPath := c.PostForm("next")
 	user := models.GetAuthUserinfo(username)
 	if user == nil {
-		c.JSON(200, gin.H{
+		c.JSON(http.StatusNotFound, gin.H{
 			"succeed": false,
 			"message": "该邮箱号尚未注册知乎",
 		})
 		return
 	}
 	if user.Password != password {
-		c.JSON(200, gin.H{
+		c.JSON(http.StatusForbidden, gin.H{
 			"succeed": false,
 			"message": "帐号或密码错误",
 		})
@@ -38,10 +43,16 @@ func SigninPost(c *gin.Context) {
 	sess.Clear()
 	sess.Set(config.Server.SessionKey, user.ID)
 	sess.Save()
-	c.Redirect(http.StatusSeeOther, nextPath)
+	c.JSON(http.StatusCreated, nil)
+	//	c.Redirect(http.StatusSeeOther, nextPath)
 }
 
 func SignupGet(c *gin.Context) {
+	uid := VisitorID(c)
+	if uid != 0 {
+		c.Redirect(http.StatusSeeOther, "/")
+		return
+	}
 	c.HTML(http.StatusOK, "signup.html", nil)
 }
 
