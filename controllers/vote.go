@@ -27,7 +27,6 @@ func VoteAnswer(c *gin.Context) {
 
 	user, _ := Visitor(c)
 	if user == nil {
-		println("user unsigned to vote")
 		c.JSON(http.StatusForbidden, gin.H{
 			"success": succeed,
 		})

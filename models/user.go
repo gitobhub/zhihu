@@ -89,14 +89,11 @@ func (user *BasicUserinfo) QueryRelationWithVisitor(uid uint) error {
 	if err := db.QueryRow("SELECT 1 FROM member_followers WHERE member_id=? AND follower_id=?",
 		user.ID, uid).Scan(&temp); err != nil {
 		if err == sql.ErrNoRows {
-			println(uid, "user.Followed = false")
 			return nil
 		}
-		println("user.Followed = false", err.Error())
 		return err
 	}
 	user.Followed = true
-	println("user.Followed = true")
 	return nil
 }
 

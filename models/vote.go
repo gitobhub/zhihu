@@ -82,7 +82,6 @@ func (page *Page) AnswerVoters(aid string, offset int, uid uint) []Voter {
 	start := page.Session.Get("start" + aid)
 	if start == nil {
 		var newStart int
-		println("start==nil")
 		if err := db.QueryRow("SELECT answer_voters.id FROM users, answer_voters WHERE users.id=answer_voters.user_id "+
 			"AND answer_id=? ORDER BY answer_voters.id DESC LIMIT 1", aid).Scan(&newStart); err != nil {
 			log.Println("*Page.AnswerVoters(): ", err)
@@ -99,8 +98,6 @@ func (page *Page) AnswerVoters(aid string, offset int, uid uint) []Voter {
 		"users.avatar_url, users.url_token, users.answer_count, users.follower_count FROM users, answer_voters "+
 		"WHERE users.id=answer_voters.user_id AND answer_id=? AND answer_voters.id<=? ORDER BY answer_voters.id DESC "+limit,
 		aid, start.(int))
-	println(limit)
-	println(start.(int))
 	if err != nil {
 		log.Println("*Page.AnswerVoters(): ", err)
 		return voters

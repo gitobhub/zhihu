@@ -1,3 +1,0 @@
-addr: :8080
-session_secret: zhihu
-session_key: user_id

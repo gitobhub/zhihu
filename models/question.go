@@ -51,7 +51,6 @@ func UnfollowQuestion(qid, uid uint) error {
 }
 
 func (page *Page) QuestionFollowers(qid string, offset int, uid uint) []Follower {
-	println("QestionFollowers()")
 	start := page.Session.Get("question_followers_start" + qid)
 	if start == nil {
 		var newStart string
@@ -71,7 +70,6 @@ func (page *Page) QuestionFollowers(qid string, offset int, uid uint) []Follower
 		"users.avatar_url, users.url_token, users.answer_count, users.follower_count FROM users, question_followers "+
 		"WHERE users.id=question_followers.user_id AND question_id=? AND question_followers.created_at<=? ORDER BY question_followers.created_at DESC "+limit,
 		qid, start.(string))
-	println(limit)
 	log.Println(start.(string))
 	if err != nil {
 		log.Println("*Page.QestionFollowers(): ", err)

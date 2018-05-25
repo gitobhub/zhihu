@@ -39,7 +39,6 @@ func AnswerPage(aid string, uid uint) *Answer {
 		&answer.Content, &dateCreated, &dateModified,
 		&answer.MarkedCount, &answer.CommentCount, &answer.Deleted,
 	)
-	println(answer.Deleted)
 	if err != nil {
 		if err != sql.ErrNoRows {
 			log.Println("models.AnswerPage(): answer", aid, err)
@@ -126,11 +125,9 @@ func GetQuestionInfo(qid string, uid uint) (question *Question) {
 		}
 		question.Answered = false
 	}
-	println(deleted)
 	if deleted == 1 {
 		question.VisitorAnswerDeleted = true
 	}
-	println(question.VisitorAnswerDeleted)
 	//question visit count + 1
 	question.UpdateVisitCount()
 
@@ -224,7 +221,6 @@ func (answer *Answer) QueryRelation(uid uint) {
 		}
 		if v.(int64) == 1 {
 			answer.Upvoted = true
-			println("answer.Upvoted = true")
 		}
 	}
 	if answer.Upvoted != true {
@@ -234,7 +230,6 @@ func (answer *Answer) QueryRelation(uid uint) {
 		}
 		if v.(int64) == 1 {
 			answer.Downvoted = true
-			println("answer.Downvoted = true")
 		}
 	}
 	//
@@ -244,7 +239,6 @@ func (answer *Answer) QueryRelation(uid uint) {
 }
 
 func (question *Question) UpdateVisitCount() {
-	println("UpdateVisitCount()")
 	conn := redisPool.Get()
 	v, err := conn.Do("INCR", "visited:"+question.ID)
 	if err != nil {
