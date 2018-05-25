@@ -2,8 +2,8 @@
     "database": {
         "database": "zhihu",
         "driver_name": "mysql",
-        "password": "MYSQLtianwenjie",
-        "user": "root"
+        "password": "",
+        "user": ""
     },
     "redis": {
         "host": "",
@@ -13,7 +13,6 @@
     },
     "server": {
         "addr": ":8080",
-        "dsn": "root:MYSQLtianwenjie@/zhihu",
         "session_key": "user_id",
         "session_secret": "zhihu"
     }
