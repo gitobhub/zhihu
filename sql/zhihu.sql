@@ -24,7 +24,7 @@ CREATE TABLE users (
     follower_count int(11) unsigned DEFAULT 0,
     following_count int(11) unsigned DEFAULT 0,
 	PRIMARY KEY (id)
-);
+) DEFAULT CHARSET=utf8;
 
 #---------------------------------------------------------
 
@@ -41,7 +41,7 @@ CREATE TABLE questions (
     follower_count int(11) unsigned NOT NULL DEFAULT 0,
     comment_count int(11) unsigned NOT NULL DEFAULT 0,
     PRIMARY KEY (id)
-);
+) DEFAULT CHARSET=utf8;
 
 #---------------------------------------------------------
 
@@ -69,7 +69,7 @@ CREATE TABLE topics (
     id int(11) unsigned NOT NULL AUTO_INCREMENT,
     name varchar(50) NOT NULL DEFAULT '',
     PRIMARY KEY (id)
-);
+) DEFAULT CHARSET=utf8;
 
 #--------------------------------------------------------
 
@@ -80,7 +80,7 @@ CREATE TABLE question_topics (
     topic_id int(11) unsigned NOT NULL,
     topic_name varchar(50) NOT NULL,        #冗余列
     PRIMARY KEY (question_id, topic_id)
-);
+) DEFAULT CHARSET=utf8;
 
 #--------------------------------------------------------
 
@@ -176,27 +176,13 @@ url_token="pan";
 
 INSERT questions SET 
 user_id=1,
-title="how to be excellent?", 
-description="like qiu or pan", 
+title="对于知乎新人你们有什么好的建议？", 
+description="我是一个知乎的新用户，各位大大们有什么好的关注话题推荐一下，或者一些好的建议，或者您认为有用的东西，都推荐一下。
+我的好奇心比较重，所以关注的东西比较多，但我不介意再多一点", 
 created_at=now(),
 modified_at=now(),
 follower_count=1,
-answer_count=1,
 comment_count=1;
-
-INSERT answers SET
-question_id=1,
-user_id=2,
-content="fuck you",
-created_at=now(),
-modified_at=now(),
-comment_count=1;
-
-INSERT answer_comments SET
-user_id=1,
-answer_id=1,
-created_at=now(),
-content="thank u very much";
 
 INSERT question_comments SET
 user_id=3,
@@ -205,12 +191,12 @@ created_at=now(),
 content="good question!!";
 
 INSERT topics SET 
-name="excellence";
+name="知乎";
 
 INSERT question_topics SET
 question_id=1,
 topic_id=1,
-topic_name="excellence";
+topic_name="知乎";
 
 INSERT question_followers SET
 question_id=1,
