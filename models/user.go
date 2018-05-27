@@ -5,24 +5,25 @@ import (
 	"errors"
 	_ "github.com/go-sql-driver/mysql"
 	"log"
-	//	"github.com/henrylee2cn/pholcus/common/pinyin"
 )
 
-func InsertAuthUser(user *AuthUserinfo) error {
+func InsertUser(user *User) (uint, error) {
 	dup := isUsernameExist(user.Email)
 	if dup {
-		return errors.New("Already exists")
+		return 0, errors.New("Already exists")
 	}
-	//TODO:
-	urlToken := user.Name
 
-	stmt, err := db.Prepare("INSERT users SET email=?, name=?, password=?, url=?")
+	stmt, err := db.Prepare("INSERT users SET email=?, fullname=?, password=?, url_token=?")
 	if err != nil {
-		return err
+		return 0, err
 	}
 	defer stmt.Close()
-	_, err = stmt.Exec(user.Email, user.Name, user.Password, urlToken)
-	return err
+	res, err := stmt.Exec(user.Email, user.Name, user.Password, user.URLToken)
+	if err != nil {
+		return 0, err
+	}
+	uid, err := res.LastInsertId()
+	return uint(uid), err
 }
 
 func isUsernameExist(username string) bool {
@@ -39,7 +40,7 @@ func isUsernameExist(username string) bool {
 	return true //FIXME:
 }
 
-func GetAuthUserinfo(username string) *AuthUserinfo {
+func GetUserByUsername(username string) *User {
 	stmt, err := db.Prepare("SELECT id, email, password FROM users WHERE email=?")
 	if err != nil {
 		log.Println(err)
@@ -47,7 +48,7 @@ func GetAuthUserinfo(username string) *AuthUserinfo {
 	}
 	defer stmt.Close()
 
-	user := new(AuthUserinfo)
+	user := new(User)
 	if err := stmt.QueryRow(username).Scan(&user.ID, &user.Email, &user.Password); err != nil {
 		log.Printf("user %d: %v", username, err)
 		return nil
@@ -55,12 +56,12 @@ func GetAuthUserinfo(username string) *AuthUserinfo {
 	return user
 }
 
-func GetBasicUserinfo(uid uint) *BasicUserinfo {
-	user := new(BasicUserinfo)
-	stmt, err := db.Prepare("SELECT id, name, gender, headline, url_token, " +
+func GetUserByID(uid uint) *User {
+	user := new(User)
+	stmt, err := db.Prepare("SELECT id, fullname, gender, headline, url_token, " +
 		"avatar_url, answer_count, follower_count FROM users WHERE id=?")
 	if err != nil {
-		log.Println("models.GetBasicUserinfo(): ", err)
+		log.Println("models.GetUser(): ", err)
 		return nil
 	}
 	defer stmt.Close()
@@ -78,13 +79,12 @@ func GetBasicUserinfo(uid uint) *BasicUserinfo {
 }
 
 func (answer *Answer) GetAuthorInfo(uid uint) {
-	author := new(Author)
-	author.BasicUserinfo = *GetBasicUserinfo(answer.Author.ID)
-	author.BasicUserinfo.QueryRelationWithVisitor(uid)
+	author := GetUserByID(answer.Author.ID)
+	author.QueryRelationWithVisitor(uid)
 	answer.Author = author
 }
 
-func (user *BasicUserinfo) QueryRelationWithVisitor(uid uint) error {
+func (user *User) QueryRelationWithVisitor(uid uint) error {
 	var temp int
 	if err := db.QueryRow("SELECT 1 FROM member_followers WHERE member_id=? AND follower_id=?",
 		user.ID, uid).Scan(&temp); err != nil {
@@ -97,9 +97,9 @@ func (user *BasicUserinfo) QueryRelationWithVisitor(uid uint) error {
 	return nil
 }
 
-func GetMemberByURLToken(urlToken string, uid uint) *BasicUserinfo {
-	user := new(BasicUserinfo)
-	if err := db.QueryRow("SELECT id, name, gender, headline, url_token, "+
+func GetMemberByURLToken(urlToken string, uid uint) *User {
+	user := new(User)
+	if err := db.QueryRow("SELECT id, fullname, gender, headline, url_token, "+
 		"avatar_url, answer_count, follower_count FROM users WHERE url_token=?", urlToken).Scan(
 		&user.ID, &user.Name, &user.Gender,
 		&user.Headline, &user.URLToken, &user.AvatarURL,

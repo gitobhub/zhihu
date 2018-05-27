@@ -5,7 +5,7 @@ import (
 	"log"
 )
 
-func (user *BasicUserinfo) UpVote(aid string) bool {
+func (user *User) UpVote(aid string) bool {
 	conn := redisPool.Get()
 	conn.Send("SADD", "upvoted:"+aid, user.ID)
 	conn.Send("SREM", "downvoted:"+aid, user.ID)
@@ -28,7 +28,7 @@ func (user *BasicUserinfo) UpVote(aid string) bool {
 	return true
 }
 
-func (user *BasicUserinfo) DownVote(aid string) bool {
+func (user *User) DownVote(aid string) bool {
 	conn := redisPool.Get()
 	conn.Send("SADD", "downvoted:"+aid, user.ID)
 	conn.Send("SREM", "upvoted:"+aid, user.ID)
@@ -51,7 +51,7 @@ func (user *BasicUserinfo) DownVote(aid string) bool {
 	return true
 }
 
-func (user *BasicUserinfo) Neutral(aid string) bool {
+func (user *User) Neutral(aid string) bool {
 	conn := redisPool.Get()
 	conn.Send("SREM", "upvoted:"+aid, user.ID)
 	conn.Send("SREM", "downvoted:"+aid, user.ID)
@@ -77,8 +77,8 @@ func (user *BasicUserinfo) Neutral(aid string) bool {
 	return true
 }
 
-func (page *Page) AnswerVoters(aid string, offset int, uid uint) []Voter {
-	var voters = make([]Voter, 0)
+func (page *Page) AnswerVoters(aid string, offset int, uid uint) []User {
+	var voters = make([]User, 0)
 	start := page.Session.Get("start" + aid)
 	if start == nil {
 		var newStart int
@@ -94,7 +94,7 @@ func (page *Page) AnswerVoters(aid string, offset int, uid uint) []Voter {
 		page.Paging.IsStart = true
 	}
 	limit := fmt.Sprintf("limit %d,%d", offset, 10)
-	rows, err := db.Query("SELECT users.id, users.name, users.gender, users.headline, "+
+	rows, err := db.Query("SELECT users.id, users.fullname, users.gender, users.headline, "+
 		"users.avatar_url, users.url_token, users.answer_count, users.follower_count FROM users, answer_voters "+
 		"WHERE users.id=answer_voters.user_id AND answer_id=? AND answer_voters.id<=? ORDER BY answer_voters.id DESC "+limit,
 		aid, start.(int))
@@ -106,7 +106,7 @@ func (page *Page) AnswerVoters(aid string, offset int, uid uint) []Voter {
 
 	var i int
 	for ; rows.Next(); i++ {
-		var voter Voter
+		var voter User
 		if err := rows.Scan(&voter.ID, &voter.Name, &voter.Gender,
 			&voter.Headline, &voter.AvatarURL, &voter.URLToken,
 			&voter.AnswerCount, &voter.FollowerCount); err != nil {

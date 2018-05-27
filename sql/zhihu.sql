@@ -13,10 +13,10 @@ CREATE TABLE users (
 	id int(11) unsigned NOT NULL AUTO_INCREMENT,
     created_at datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
 	email varchar(50) NOT NULL DEFAULT '',
-	name varchar(100) NOT NULL,
+	fullname varchar(100) NOT NULL,
 	password varchar(100) NOT NULL,
 	gender tinyint(2)  NOT NULL DEFAULT '-1',
-    headline varchar(500) DEFAULT NULL,
+    headline varchar(500) DEFAULT "",
     url_token varchar(50) NOT NULL DEFAULT '',
     avatar_url varchar(100) NOT NULL DEFAULT '/static/images/default.jpg',
     marked_count int(11) unsigned DEFAULT 0, #冗余列避免每次计算所有回答的收藏数总和 或将用redis记录收藏
@@ -145,18 +145,18 @@ CREATE TABLE answer_voters (
 
 INSERT users SET
 created_at=now(),
-email="root",
-name="root",
-password="root",
+email="root@root.com",
+fullname="root",
+password="5508c15e9a9781f58869db41eb17f5c3",
 headline="a man to look for answer",
 url_token="root",
 avatar_url="/static/favicon.ico";
 
 INSERT users SET
 created_at=now(),
-email="qiu",
-name="qiu",
-password="qiu",
+email="qiu@qiu.com",
+fullname="qiu",
+password="d70fcd4ea1b4bfa8d3301f7efe6ac779",
 gender=1,
 headline="an excellent man",
 url_token="qiu",
@@ -166,9 +166,9 @@ answer_count=1;
 
 INSERT users SET
 created_at=now(),
-email="pan",
-name="pan",
-password="pan",
+email="pan@pan.com",
+fullname="pan",
+password= "87c8e41d5a549565eba508f243f31d49",
 gender=1,
 headline="a handsome man",
 url_token="pan";

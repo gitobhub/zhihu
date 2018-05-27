@@ -14,6 +14,7 @@
     "server": {
         "addr": ":8080",
         "session_key": "user_id",
-        "session_secret": "zhihu"
+        "session_secret": "zhihu",
+        "salt": "^&*(kk)"
     }
 }

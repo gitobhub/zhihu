@@ -50,13 +50,13 @@ func UnfollowQuestion(qid, uid uint) error {
 	return nil
 }
 
-func (page *Page) QuestionFollowers(qid string, offset int, uid uint) []Follower {
+func (page *Page) QuestionFollowers(qid string, offset int, uid uint) []User {
 	start := page.Session.Get("question_followers_start" + qid)
 	if start == nil {
 		var newStart string
 		if err := db.QueryRow("SELECT question_followers.created_at FROM users, question_followers WHERE users.id=question_followers.user_id "+
 			"AND question_id=? ORDER BY question_followers.created_at DESC LIMIT 1", qid).Scan(&newStart); err != nil {
-			log.Println("*Page.QestionFollowers(): ", err)
+			log.Println("*Page.QestionUsers(): ", err)
 			return nil
 		}
 		page.Session.Set("question_followers_start"+qid, newStart)
@@ -66,25 +66,25 @@ func (page *Page) QuestionFollowers(qid string, offset int, uid uint) []Follower
 		page.Paging.IsStart = true
 	}
 	limit := fmt.Sprintf("limit %d,%d", offset, 10)
-	rows, err := db.Query("SELECT users.id, users.name, users.gender, users.headline, "+
+	rows, err := db.Query("SELECT users.id, users.fullname, users.gender, users.headline, "+
 		"users.avatar_url, users.url_token, users.answer_count, users.follower_count FROM users, question_followers "+
 		"WHERE users.id=question_followers.user_id AND question_id=? AND question_followers.created_at<=? ORDER BY question_followers.created_at DESC "+limit,
 		qid, start.(string))
 	log.Println(start.(string))
 	if err != nil {
-		log.Println("*Page.QestionFollowers(): ", err)
+		log.Println("*Page.QestionUsers(): ", err)
 		return nil
 	}
 	defer rows.Close()
 
-	var followers []Follower
+	var followers []User
 	var i int
 	for ; rows.Next(); i++ {
-		var follower Follower
+		var follower User
 		if err := rows.Scan(&follower.ID, &follower.Name, &follower.Gender,
 			&follower.Headline, &follower.AvatarURL, &follower.URLToken,
 			&follower.AnswerCount, &follower.FollowerCount); err != nil {
-			log.Println("*Page.QestionFollowers(): ", err)
+			log.Println("*Page.QestionUsers(): ", err)
 			continue
 		}
 		follower.QueryRelationWithVisitor(uid)
@@ -114,7 +114,7 @@ func (page *Page) QuestionComments(qid string, offset int, uid uint) []Comment {
 		page.Paging.IsStart = true
 	}
 	limit := fmt.Sprintf("limit %d,%d", offset, 10) //XXX:10
-	rows, err := db.Query("SELECT users.id, users.name, users.gender, users.headline, "+
+	rows, err := db.Query("SELECT users.id, users.fullname, users.gender, users.headline, "+
 		"users.avatar_url, users.url_token, users.answer_count, users.follower_count, "+
 		"question_comments.id, question_comments.content, unix_timestamp(question_comments.created_at) FROM users, question_comments "+
 		"WHERE users.id=question_comments.user_id AND question_id=? AND question_comments.created_at<=? ORDER BY question_comments.created_at DESC "+limit,
@@ -131,7 +131,7 @@ func (page *Page) QuestionComments(qid string, offset int, uid uint) []Comment {
 	for ; rows.Next(); i++ {
 		var dateCreated int64
 		var comment Comment
-		var author BasicUserinfo
+		var author User
 		if err := rows.Scan(&author.ID, &author.Name, &author.Gender,
 			&author.Headline, &author.AvatarURL, &author.URLToken,
 			&author.AnswerCount, &author.FollowerCount,
@@ -171,7 +171,7 @@ func (page *Page) QuestionComments(qid string, offset int, uid uint) []Comment {
 func InsertQuestionComment(qid, content string, uid uint) (*Comment, error) {
 	conn := redisPool.Get()
 	comment := new(Comment)
-	var author BasicUserinfo
+	var author User
 	var dateCreated int64
 	tx, err := db.Begin()
 	if err != nil {
@@ -185,7 +185,7 @@ func InsertQuestionComment(qid, content string, uid uint) (*Comment, error) {
 	if _, err := tx.Exec("UPDATE questions SET comment_count=comment_count+1 WHERE id=?", qid); err != nil {
 		return nil, err
 	}
-	if err := tx.QueryRow("SELECT users.id, users.name, users.gender, users.headline, "+
+	if err := tx.QueryRow("SELECT users.id, users.fullname, users.gender, users.headline, "+
 		"users.avatar_url, users.url_token, users.answer_count, users.follower_count, "+
 		"question_comments.id, question_comments.content, unix_timestamp(question_comments.created_at) FROM users, question_comments "+
 		"WHERE users.id=question_comments.user_id AND question_comments.id=LAST_INSERT_ID() AND question_comments.user_id=?", uid).Scan(

@@ -16,6 +16,7 @@ type serverConfig struct {
 	Addr          string
 	SessionSecret string `json:"session_secret"`
 	SessionKey    string `json:"session_key"`
+	Salt          string `json:"salt"`
 }
 
 type databaseConfig struct {
@@ -44,7 +45,8 @@ var (
 func initJson() {
 	data, err := ioutil.ReadFile("config/config.json")
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
+		return
 	}
 	if err := json.Unmarshal(data, &Config); err != nil {
 		log.Fatal(err)

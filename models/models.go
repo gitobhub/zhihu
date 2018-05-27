@@ -4,13 +4,15 @@ import (
 	"html/template"
 )
 
-type BasicUserinfo struct {
+type User struct {
 	ID        uint   `json:"id"`
-	Name      string `json:"name"`
+	Email     string `json:"-"` //username
+	Name      string `json:"fullname"`
+	Password  string `json:"-"`
+	URLToken  string `json:"url_token"`
 	Gender    int    `json:"gender"`
 	Headline  string `json:"headline"`
 	AvatarURL string `json:"avatar_url"`
-	URLToken  string `json:"url_token"`
 
 	Posts         []*Post
 	AnswerCount   uint `json:"answer_count"`
@@ -21,7 +23,7 @@ type BasicUserinfo struct {
 }
 
 type Member struct {
-	BasicUserinfo
+	User
 	MarkedCount    uint `json:"marked_count"`
 	FollowingCount uint `json:'following_count"`
 	//	Educations []*Education
@@ -33,32 +35,17 @@ type Member struct {
 	ThankedCount        uint   `json:"thanked_count"`
 }
 
-type AuthUserinfo struct {
-	ID       uint
-	Email    string //username
-	Name     string
-	Password string
-}
-
-type Follower struct {
-	BasicUserinfo
-}
-
-type Voter struct {
-	BasicUserinfo
-}
-
-type Author struct {
-	Member
-}
+//type Author struct {
+///	User
+//}
 
 type Question struct {
-	ID           string         `json:"id"`
-	User         *BasicUserinfo `json:"user"`
-	Title        string         `json:"title"`
-	Description  string         `json:"description"`
-	DateCreated  string         `json:"date_created"`
-	DateModified string         `json:"date_modified"`
+	ID           string `json:"id"`
+	User         *User  `json:"user"`
+	Title        string `json:"title"`
+	Description  string `json:"description"`
+	DateCreated  string `json:"date_created"`
+	DateModified string `json:"date_modified"`
 
 	VisitCount    uint `json:"visit_count"`
 	AnswerCount   uint `json:"answer_count"`
@@ -84,7 +71,7 @@ type Topic struct {
 type Answer struct {
 	ID string `json:"id"`
 	*Question
-	Author       *Author `json:"author"`
+	Author       *User `json:"author"`
 	Content      template.HTML
 	DateCreated  string
 	DateModified string
@@ -107,14 +94,14 @@ type Post struct {
 }
 
 type Comment struct {
-	ID            uint           `json:"id"`
-	Author        *BasicUserinfo `json:"author"`
-	DateCreated   string         `json:"date_created"`
-	UpvoteCount   uint           `json:"upvote_count"`
-	DownvoteCount uint           `json:"downvote_count"`
-	Content       string         `json:"content"`
-	LikeCount     uint           `json:"like_count"`
-	Liked         bool           `json:"is_liked"`
+	ID            uint   `json:"id"`
+	Author        *User  `json:"author"`
+	DateCreated   string `json:"date_created"`
+	UpvoteCount   uint   `json:"upvote_count"`
+	DownvoteCount uint   `json:"downvote_count"`
+	Content       string `json:"content"`
+	LikeCount     uint   `json:"like_count"`
+	Liked         bool   `json:"is_liked"`
 }
 
 type AnswerComment struct {
@@ -129,13 +116,13 @@ type QuestionComment struct {
 
 func NewQuestion() *Question {
 	question := new(Question)
-	question.User = new(BasicUserinfo)
+	question.User = new(User)
 	return question
 }
 
 func NewAnswer() *Answer {
 	answer := new(Answer)
 	answer.Question = NewQuestion()
-	answer.Author = new(Author)
+	answer.Author = new(User)
 	return answer
 }
