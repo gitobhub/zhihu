@@ -17,7 +17,7 @@ func MemberInfo(c *gin.Context) {
 		return
 	}
 
-	member := models.GetMemberByURLToken(urlToken, uid)
+	member := models.GetUserByURLToken(urlToken, uid)
 	if member == nil {
 		c.JSON(http.StatusNotFound, nil)
 		return

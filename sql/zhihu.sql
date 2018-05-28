@@ -18,6 +18,7 @@ CREATE TABLE users (
 	gender tinyint(2)  NOT NULL DEFAULT '-1',
     headline varchar(500) DEFAULT "",
     url_token varchar(50) NOT NULL DEFAULT '',
+    url_token_code int(5) DEFAULT 0,
     avatar_url varchar(100) NOT NULL DEFAULT '/static/images/default.jpg',
     marked_count int(11) unsigned DEFAULT 0, #冗余列避免每次计算所有回答的收藏数总和 或将用redis记录收藏
     answer_count int(11) unsigned DEFAULT 0,

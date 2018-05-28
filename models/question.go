@@ -51,12 +51,19 @@ func UnfollowQuestion(qid, uid uint) error {
 }
 
 func (page *Page) QuestionFollowers(qid string, offset int, uid uint) []User {
+	var err error
+	defer func() {
+		if err != nil {
+			log.Println("*Page.QestionUsers(): ", err)
+		}
+	}()
+
 	start := page.Session.Get("question_followers_start" + qid)
 	if start == nil {
 		var newStart string
-		if err := db.QueryRow("SELECT question_followers.created_at FROM users, question_followers WHERE users.id=question_followers.user_id "+
-			"AND question_id=? ORDER BY question_followers.created_at DESC LIMIT 1", qid).Scan(&newStart); err != nil {
-			log.Println("*Page.QestionUsers(): ", err)
+		err = db.QueryRow("SELECT question_followers.created_at FROM users, question_followers WHERE users.id=question_followers.user_id "+
+			"AND question_id=? ORDER BY question_followers.created_at DESC LIMIT 1", qid).Scan(&newStart)
+		if err != nil {
 			return nil
 		}
 		page.Session.Set("question_followers_start"+qid, newStart)
@@ -66,13 +73,11 @@ func (page *Page) QuestionFollowers(qid string, offset int, uid uint) []User {
 		page.Paging.IsStart = true
 	}
 	limit := fmt.Sprintf("limit %d,%d", offset, 10)
-	rows, err := db.Query("SELECT users.id, users.fullname, users.gender, users.headline, "+
-		"users.avatar_url, users.url_token, users.answer_count, users.follower_count FROM users, question_followers "+
+	rows, err := db.Query("SELECT users.id, users.fullname, users.gender, users.headline, users.avatar_url, "+
+		"users.url_token, users.url_token_code, users.answer_count, users.follower_count FROM users, question_followers "+
 		"WHERE users.id=question_followers.user_id AND question_id=? AND question_followers.created_at<=? ORDER BY question_followers.created_at DESC "+limit,
 		qid, start.(string))
-	log.Println(start.(string))
 	if err != nil {
-		log.Println("*Page.QestionUsers(): ", err)
 		return nil
 	}
 	defer rows.Close()
@@ -80,13 +85,15 @@ func (page *Page) QuestionFollowers(qid string, offset int, uid uint) []User {
 	var followers []User
 	var i int
 	for ; rows.Next(); i++ {
-		var follower User
-		if err := rows.Scan(&follower.ID, &follower.Name, &follower.Gender,
-			&follower.Headline, &follower.AvatarURL, &follower.URLToken,
-			&follower.AnswerCount, &follower.FollowerCount); err != nil {
-			log.Println("*Page.QestionUsers(): ", err)
+		follower := User{}
+		urlTokenCode := 0
+		err = rows.Scan(&follower.ID, &follower.Name, &follower.Gender, &follower.Headline,
+			&follower.AvatarURL, &follower.URLToken, &urlTokenCode,
+			&follower.AnswerCount, &follower.FollowerCount)
+		if err != nil {
 			continue
 		}
+		utils.URLToken(&follower.URLToken, urlTokenCode)
 		follower.QueryRelationWithVisitor(uid)
 		followers = append(followers, follower)
 	}
@@ -99,12 +106,18 @@ func (page *Page) QuestionFollowers(qid string, offset int, uid uint) []User {
 }
 
 func (page *Page) QuestionComments(qid string, offset int, uid uint) []Comment {
+	var err error
+	defer func() {
+		if err != nil {
+			log.Println("*Page.QestionComments(): ", err)
+		}
+	}()
+
 	start := page.Session.Get("question_comments_start" + qid)
 	if start == nil {
 		var newStart string
-		if err := db.QueryRow("SELECT created_at FROM question_comments WHERE "+
+		if err = db.QueryRow("SELECT created_at FROM question_comments WHERE "+
 			"question_id=? ORDER BY created_at DESC LIMIT 1", qid).Scan(&newStart); err != nil {
-			log.Println("*Page.QestionComments(): ", err)
 			return nil
 		}
 		page.Session.Set("question_comments_start"+qid, newStart)
@@ -114,13 +127,12 @@ func (page *Page) QuestionComments(qid string, offset int, uid uint) []Comment {
 		page.Paging.IsStart = true
 	}
 	limit := fmt.Sprintf("limit %d,%d", offset, 10) //XXX:10
-	rows, err := db.Query("SELECT users.id, users.fullname, users.gender, users.headline, "+
-		"users.avatar_url, users.url_token, users.answer_count, users.follower_count, "+
-		"question_comments.id, question_comments.content, unix_timestamp(question_comments.created_at) FROM users, question_comments "+
+	rows, err := db.Query("SELECT users.id, users.fullname, users.gender, users.headline, users.avatar_url, "+
+		"users.url_token, users.url_token_code, users.answer_count, users.follower_count, question_comments.id, "+
+		"question_comments.content, unix_timestamp(question_comments.created_at) FROM users, question_comments "+
 		"WHERE users.id=question_comments.user_id AND question_id=? AND question_comments.created_at<=? ORDER BY question_comments.created_at DESC "+limit,
 		qid, start.(string))
 	if err != nil {
-		log.Println("*Page.QuestionComments(): ", err)
 		return nil
 	}
 	defer rows.Close()
@@ -132,11 +144,12 @@ func (page *Page) QuestionComments(qid string, offset int, uid uint) []Comment {
 		var dateCreated int64
 		var comment Comment
 		var author User
-		if err := rows.Scan(&author.ID, &author.Name, &author.Gender,
+		var urlTokenCode int
+		if err = rows.Scan(&author.ID, &author.Name, &author.Gender,
 			&author.Headline, &author.AvatarURL, &author.URLToken,
-			&author.AnswerCount, &author.FollowerCount,
+			&urlTokenCode, &author.AnswerCount, &author.FollowerCount,
 			&comment.ID, &comment.Content, &dateCreated); err != nil {
-			log.Println("*Page.QestionComments(): ", err)
+			log.Println("*Page.QestionComments(): ui", err)
 			continue
 		}
 		key := fmt.Sprintf("question_comment liked:%d", comment.ID)
@@ -155,6 +168,7 @@ func (page *Page) QuestionComments(qid string, offset int, uid uint) []Comment {
 			comment.Liked = true
 		}
 
+		utils.URLToken(&author.URLToken, urlTokenCode)
 		comment.DateCreated = utils.FormatBeforeUnixTime(dateCreated)
 		comment.Author = &author
 		//		comment.QueryRelationWithVisitor(uid)
@@ -169,30 +183,37 @@ func (page *Page) QuestionComments(qid string, offset int, uid uint) []Comment {
 }
 
 func InsertQuestionComment(qid, content string, uid uint) (*Comment, error) {
+	var err error
+	defer func() {
+		if err != nil {
+			log.Println("*Page.QestionComments(): ", err)
+		}
+	}()
+
 	conn := redisPool.Get()
 	comment := new(Comment)
 	var author User
 	var dateCreated int64
+	var urlTokenCode int
 	tx, err := db.Begin()
 	if err != nil {
 		return nil, err
 	}
 	defer tx.Rollback()
 
-	if _, err := tx.Exec("INSERT question_comments SET question_id=?, user_id=?, content=?", qid, uid, content); err != nil {
+	if _, err = tx.Exec("INSERT question_comments SET question_id=?, user_id=?, content=?", qid, uid, content); err != nil {
 		return nil, err
 	}
-	if _, err := tx.Exec("UPDATE questions SET comment_count=comment_count+1 WHERE id=?", qid); err != nil {
+	if _, err = tx.Exec("UPDATE questions SET comment_count=comment_count+1 WHERE id=?", qid); err != nil {
 		return nil, err
 	}
-	if err := tx.QueryRow("SELECT users.id, users.fullname, users.gender, users.headline, "+
-		"users.avatar_url, users.url_token, users.answer_count, users.follower_count, "+
+	if err = tx.QueryRow("SELECT users.id, users.fullname, users.gender, users.headline, "+
+		"users.avatar_url, users.url_token, user.url_token_code, users.answer_count, users.follower_count, "+
 		"question_comments.id, question_comments.content, unix_timestamp(question_comments.created_at) FROM users, question_comments "+
 		"WHERE users.id=question_comments.user_id AND question_comments.id=LAST_INSERT_ID() AND question_comments.user_id=?", uid).Scan(
 		&author.ID, &author.Name, &author.Gender, &author.Headline, &author.AvatarURL,
-		&author.URLToken, &author.AnswerCount, &author.FollowerCount,
+		&author.URLToken, &urlTokenCode, &author.AnswerCount, &author.FollowerCount,
 		&comment.ID, &comment.Content, &dateCreated); err != nil {
-		log.Println("*Page.QestionComments(): ", err)
 		return nil, err
 	}
 	key := fmt.Sprintf("question_comment liked:%d", comment.ID)
@@ -201,11 +222,12 @@ func InsertQuestionComment(qid, content string, uid uint) (*Comment, error) {
 		log.Println("*Page.QestionComments(): ", err)
 		return nil, err
 	}
+	utils.URLToken(&author.URLToken, urlTokenCode)
 	comment.LikeCount = uint(v.(int64))
 	comment.DateCreated = utils.FormatBeforeUnixTime(dateCreated)
 	comment.Author = &author
 
-	if err := tx.Commit(); err != nil {
+	if err = tx.Commit(); err != nil {
 		return nil, err
 	}
 	return comment, nil

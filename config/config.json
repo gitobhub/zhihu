@@ -2,8 +2,8 @@
     "database": {
         "database": "zhihu",
         "driver_name": "mysql",
-        "password": "",
-        "user": ""
+        "password": "MYSQLtianwenjie",
+        "user": "root"
     },
     "redis": {
         "host": "",

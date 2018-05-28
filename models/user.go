@@ -3,32 +3,56 @@ package models
 import (
 	"database/sql"
 	"errors"
-	_ "github.com/go-sql-driver/mysql"
+	"fmt"
 	"log"
+	"strings"
+	"unicode"
+
+	"github.com/gitobhub/zhihu/utils"
+	_ "github.com/go-sql-driver/mysql"
+	"github.com/henrylee2cn/pholcus/common/pinyin"
 )
 
-func InsertUser(user *User) (uint, error) {
-	dup := isUsernameExist(user.Email)
-	if dup {
-		return 0, errors.New("Already exists")
+func InsertUser(user *User) (uid uint, err error) {
+	defer func() {
+		if err != nil {
+			log.Println("models.InsertUser: ", err)
+		}
+	}()
+	tx, err := db.Begin()
+	if err != nil {
+		return 0, err
 	}
+	defer tx.Rollback()
 
-	stmt, err := db.Prepare("INSERT users SET email=?, fullname=?, password=?, url_token=?")
+	dup := isUsernameExist(tx, user.Email)
+	if dup {
+		err = errors.New("user already exists")
+		return 0, err
+	}
+	urlToken, urlTokenCode, err := CreateURLToken(tx, user.Name)
 	if err != nil {
 		return 0, err
 	}
-	defer stmt.Close()
-	res, err := stmt.Exec(user.Email, user.Name, user.Password, user.URLToken)
+	res, err := tx.Exec("INSERT users SET email=?, fullname=?, password=?, url_token=?, url_token_code=?", user.Email, user.Name, user.Password, urlToken, urlTokenCode)
 	if err != nil {
 		return 0, err
 	}
-	uid, err := res.LastInsertId()
-	return uint(uid), err
+	id, err := res.LastInsertId()
+	if err != nil {
+		return 0, err
+	}
+	uid = uint(id)
+	err = tx.Commit()
+	if err != nil {
+		return 0, err
+	}
+	return uid, nil
 }
 
-func isUsernameExist(username string) bool {
+func isUsernameExist(tx *sql.Tx, username string) bool {
 	var id uint
-	err := db.QueryRow("SELECT id FROM users WHERE email=?", username).Scan(&id)
+	err := tx.QueryRow("SELECT id FROM users WHERE email=?", username).Scan(&id)
 	switch err {
 	case sql.ErrNoRows:
 		return false
@@ -38,6 +62,38 @@ func isUsernameExist(username string) bool {
 		log.Printf("user %q: %v", username, err)
 	}
 	return true //FIXME:
+}
+
+func CreateURLToken(tx *sql.Tx, name string) (string, int, error) {
+	s := []rune(name)
+	var res []string
+	for i := len(s) - 1; i >= 0; i-- {
+		r := s[i]
+		if unicode.IsDigit(r) || unicode.IsLower(r) || unicode.IsUpper(r) {
+			c := fmt.Sprintf("%c", r)
+			if res == nil {
+				res = append(res, c)
+			} else {
+				res[len(res)-1] = c + res[len(res)-1]
+			}
+		} else {
+			res = append(res, pinyin.SinglePinyin(r, pinyin.NewArgs())[0])
+		}
+	}
+	for to, from := 0, len(res)-1; to < from; to, from = to+1, from-1 {
+		res[to], res[from] = res[from], res[to]
+	}
+	urlToken := strings.Join(res, "-")
+
+	urlTokenCode := 0
+	if err := tx.QueryRow("SELECT url_token_code FROM users WHERE url_token=? ORDER BY id DESC limit 1",
+		urlToken).Scan(&urlTokenCode); err != nil {
+		if err == sql.ErrNoRows {
+			return urlToken, urlTokenCode, nil
+		}
+		return "", 0, err
+	}
+	return urlToken, urlTokenCode + 1, nil
 }
 
 func GetUserByUsername(username string) *User {
@@ -57,23 +113,29 @@ func GetUserByUsername(username string) *User {
 }
 
 func GetUserByID(uid uint) *User {
+	var err error
+	defer func() {
+		if err != nil {
+			log.Println("models.GetUserByID(): uid =", uid, err)
+		}
+	}()
 	user := new(User)
 	stmt, err := db.Prepare("SELECT id, fullname, gender, headline, url_token, " +
-		"avatar_url, answer_count, follower_count FROM users WHERE id=?")
+		"url_token_code, avatar_url, answer_count, follower_count FROM users WHERE id=?")
 	if err != nil {
-		log.Println("models.GetUser(): ", err)
 		return nil
 	}
 	defer stmt.Close()
 
-	if err := stmt.QueryRow(uid).Scan(
-		&user.ID, &user.Name, &user.Gender,
-		&user.Headline, &user.URLToken, &user.AvatarURL,
-		&user.AnswerCount, &user.FollowerCount,
-	); err != nil {
-		log.Printf("user %d: %v", uid, err)
+	urlTokenCode := 0
+	err = stmt.QueryRow(uid).Scan(
+		&user.ID, &user.Name, &user.Gender, &user.Headline,
+		&user.URLToken, &urlTokenCode, &user.AvatarURL,
+		&user.AnswerCount, &user.FollowerCount)
+	if err != nil {
 		return nil
 	}
+	utils.URLToken(&user.URLToken, urlTokenCode)
 
 	return user
 }
@@ -97,17 +159,34 @@ func (user *User) QueryRelationWithVisitor(uid uint) error {
 	return nil
 }
 
-func GetMemberByURLToken(urlToken string, uid uint) *User {
+func GetUserByURLToken(urlToken string, uid uint) *User {
 	user := new(User)
-	if err := db.QueryRow("SELECT id, fullname, gender, headline, url_token, "+
-		"avatar_url, answer_count, follower_count FROM users WHERE url_token=?", urlToken).Scan(
+	if err := db.QueryRow("SELECT id, fullname, gender, headline, avatar_url, "+
+		"answer_count, follower_count FROM users WHERE url_token=? AND url_token_code=0", urlToken).Scan(
 		&user.ID, &user.Name, &user.Gender,
-		&user.Headline, &user.URLToken, &user.AvatarURL,
+		&user.Headline, &user.AvatarURL,
 		&user.AnswerCount, &user.FollowerCount,
 	); err != nil {
-		log.Printf("user %d: %v", uid, err)
-		return nil
+		if err == sql.ErrNoRows {
+			s := strings.Split(urlToken, "-")
+			if len(s) == 1 {
+				return nil
+			}
+			code := s[len(s)-1]
+			pre := strings.TrimSuffix(urlToken, "-"+code)
+			if err := db.QueryRow("SELECT id, fullname, gender, headline, avatar_url, "+
+				"answer_count, follower_count FROM users WHERE url_token=? AND url_token_code=?", pre, code).Scan(
+				&user.ID, &user.Name, &user.Gender,
+				&user.Headline, &user.AvatarURL,
+				&user.AnswerCount, &user.FollowerCount,
+			); err != nil {
+				return nil
+			}
+		} else {
+			return nil
+		}
 	}
+	user.URLToken = urlToken
 	user.QueryRelationWithVisitor(uid)
 
 	return user

@@ -107,17 +107,15 @@ func SignupPost(c *gin.Context) {
 		return
 	}
 
-	urlToken := utils.CreateURLToken(fullname)
 	pwdEncrypted := utils.EncryptPassword(username, password)
 	user := &models.User{
 		Email:    username,
 		Name:     fullname,
 		Password: pwdEncrypted,
-		URLToken: urlToken,
 	}
 	uid, err := models.InsertUser(user)
+	println(uid)
 	if err != nil {
-		log.Println("signup: ", err)
 		c.JSON(http.StatusOK, gin.H{
 			"success": false,
 			"message": "该邮箱已注册，请直接登录",

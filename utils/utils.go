@@ -5,12 +5,9 @@ import (
 	"fmt"
 	"io"
 	"regexp"
-	"strings"
 	"time"
-	"unicode"
 
 	"github.com/gitobhub/zhihu/config"
-	"github.com/henrylee2cn/pholcus/common/pinyin"
 )
 
 type Err struct {
@@ -115,28 +112,6 @@ func FormatBeforeUnixTime(dt int64) string {
 	return res
 }
 
-func CreateURLToken(name string) string {
-	s := []rune(name)
-	var res []string
-	for i := len(s) - 1; i >= 0; i-- {
-		r := s[i]
-		if unicode.IsDigit(r) || unicode.IsLower(r) || unicode.IsUpper(r) {
-			c := fmt.Sprintf("%c", r)
-			if res == nil {
-				res = append(res, c)
-			} else {
-				res[len(res)-1] = c + res[len(res)-1]
-			}
-		} else {
-			res = append(res, pinyin.SinglePinyin(r, pinyin.NewArgs())[0])
-		}
-	}
-	for to, from := 0, len(res)-1; to < from; to, from = to+1, from-1 {
-		res[to], res[from] = res[from], res[to]
-	}
-	return strings.Join(res, "-")
-}
-
 func EncryptPassword(username, password string) string {
 	h := md5.New()
 	io.WriteString(h, password)
@@ -145,4 +120,10 @@ func EncryptPassword(username, password string) string {
 	io.WriteString(h, username)
 	io.WriteString(h, pwdMD5)
 	return fmt.Sprintf("%x", h.Sum(nil))
+}
+
+func URLToken(urlToken *string, urlTokenCode int) {
+	if urlTokenCode != 0 {
+		*urlToken = fmt.Sprintf("%s-%d", *urlToken, urlTokenCode)
+	}
 }
