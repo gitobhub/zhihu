@@ -10,12 +10,12 @@ use zhihu
 DROP TABLE IF EXISTS users;
 
 CREATE TABLE users (
-	id int(11) unsigned NOT NULL AUTO_INCREMENT,
+    id int(11) unsigned NOT NULL AUTO_INCREMENT,
     created_at datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
-	email varchar(50) NOT NULL DEFAULT '',
-	fullname varchar(100) NOT NULL,
-	password varchar(100) NOT NULL,
-	gender tinyint(2)  NOT NULL DEFAULT '-1',
+    email varchar(50) NOT NULL DEFAULT '',
+    fullname varchar(100) NOT NULL,
+    password varchar(100) NOT NULL,
+    gender tinyint(2)  NOT NULL DEFAULT '-1',
     headline varchar(500) DEFAULT "",
     url_token varchar(50) NOT NULL DEFAULT '',
     url_token_code int(5) DEFAULT 0,
@@ -24,7 +24,7 @@ CREATE TABLE users (
     answer_count int(11) unsigned DEFAULT 0,
     follower_count int(11) unsigned DEFAULT 0,
     following_count int(11) unsigned DEFAULT 0,
-	PRIMARY KEY (id)
+    PRIMARY KEY (id)
 ) DEFAULT CHARSET=utf8;
 
 #---------------------------------------------------------

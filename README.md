@@ -8,18 +8,25 @@
 ## 项目结构
 ```
 -zhihu
-    |-conf        配置文件
-    |-controllers 控制器
-    |-models      数据库访问
-    |-middleware  中间件
-    |-static      静态资源
-    |-router      路由转发
-    |-vendor      项目依赖
-    |-views       模板文件
-    |-main.go     程序执行入口
+    |-config        配置文件
+    |-controllers   控制器
+    |-middleware    中间件
+    |-models        数据库访问
+    |-router        路由转发
+    |-static        静态资源
+    |-utils         实用工具
+    |-vendor        项目依赖
+    |-views         模板文件
+    |-main.go       程序执行入口
 ```
 
 ## 安装
+|软件依赖|
+|:------:|
+| Golang |
+| MySQL |
+| Redis |
+
 本项目使用govendor管理依赖包
 ```
 go get -u github.com/kardianos/govendor
