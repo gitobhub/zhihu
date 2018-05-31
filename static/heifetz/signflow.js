@@ -27,6 +27,10 @@ function createSignflowEvent(type) {
     })
     //close signin card
     $("button.Modal-closeButton.Button--plain").on("click", function() {
+        $(document.body).css({
+            "overflow-x":"auto",
+            "overflow-y":"auto"
+        })
         $("div.Modal-wrapper:last").parent().parent().parent().remove()
     })    
     //blur on input box
@@ -89,7 +93,7 @@ function createSignflowEvent(type) {
 
         var url = "/signup"
         if ($this.attr("data-za-detail-view-path-module") == "SignInForm") {
-            url = "signin"
+            url = "/signin"
         }
         var options = {
             url : url,
@@ -99,14 +103,18 @@ function createSignflowEvent(type) {
                 if (xhr.status === 200) {
                     if (data.success === false) {
                         signErr = true
-                        if (data.code === 100003) {
+                        switch(data.code) {
+                            case 100003:
                             createInputBoxErrorEvent($fullnameInput, data.message)
-                        } else if (data.code === 100004) {
+                            break
+                            case 100002:
+                            case 100004:
                             createInputBoxErrorEvent($accountInput, data.message)
-                        } else if (data.code === 100005) {
+                            break
+                            case 100005:
                             createInputBoxErrorEvent($passwordInput, data.message)
+                            break
                         }
-                        
                     }
                 } else if (xhr.status === 201) {
                     if (type == "card") {

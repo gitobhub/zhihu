@@ -12,15 +12,16 @@ DROP TABLE IF EXISTS users;
 CREATE TABLE users (
     id int(11) unsigned NOT NULL AUTO_INCREMENT,
     created_at datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    email varchar(50) NOT NULL DEFAULT '',
+    email varchar(50) NOT NULL DEFAULT '' UNIQUE,
     fullname varchar(100) NOT NULL,
     password varchar(100) NOT NULL,
     gender tinyint(2)  NOT NULL DEFAULT '-1',
     headline varchar(500) DEFAULT "",
-    url_token varchar(50) NOT NULL DEFAULT '',
+    url_token varchar(50) NOT NULL DEFAULT '' UNIQUE,
     url_token_code int(5) DEFAULT 0,
     avatar_url varchar(100) NOT NULL DEFAULT '/static/images/default.jpg',
-    marked_count int(11) unsigned DEFAULT 0, #冗余列避免每次计算所有回答的收藏数总和 或将用redis记录收藏
+    marked_count int(11) unsigned DEFAULT 0, 
+    question_count int(11) unsigned DEFAULT 0,
     answer_count int(11) unsigned DEFAULT 0,
     follower_count int(11) unsigned DEFAULT 0,
     following_count int(11) unsigned DEFAULT 0,
@@ -35,7 +36,7 @@ CREATE TABLE questions (
     id int(11) unsigned NOT NULL AUTO_INCREMENT,
     user_id int(11) unsigned NOT NULL,
     title varchar(100) NOT NULL DEFAULT '',
-    description longtext,
+    detail longtext,
     created_at datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
     modified_at datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
     answer_count int(11) unsigned NOT NULL DEFAULT 0,
@@ -68,7 +69,7 @@ DROP TABLE IF EXISTS topics;
 
 CREATE TABLE topics (
     id int(11) unsigned NOT NULL AUTO_INCREMENT,
-    name varchar(50) NOT NULL DEFAULT '',
+    name varchar(50) NOT NULL DEFAULT '' UNIQUE,
     PRIMARY KEY (id)
 ) DEFAULT CHARSET=utf8;
 
@@ -79,7 +80,6 @@ DROP TABLE IF EXISTS question_topics;
 CREATE TABLE question_topics (
     question_id int(11) unsigned NOT NULL,
     topic_id int(11) unsigned NOT NULL,
-    topic_name varchar(50) NOT NULL,        #冗余列
     PRIMARY KEY (question_id, topic_id)
 ) DEFAULT CHARSET=utf8;
 
@@ -151,7 +151,8 @@ fullname="root",
 password="5508c15e9a9781f58869db41eb17f5c3",
 headline="a man to look for answer",
 url_token="root",
-avatar_url="/static/favicon.ico";
+avatar_url="/static/favicon.ico",
+question_count=1;
 
 INSERT users SET
 created_at=now(),
@@ -162,8 +163,7 @@ gender=1,
 headline="an excellent man",
 url_token="qiu",
 avatar_url="/static/images/20180428152318.jpg",
-follower_count=1,
-answer_count=1;
+follower_count=1;
 
 INSERT users SET
 created_at=now(),
@@ -173,12 +173,11 @@ password= "87c8e41d5a549565eba508f243f31d49",
 gender=1,
 headline="a handsome man",
 url_token="pan";
-#--image="/static/images/default.jpg";
 
 INSERT questions SET 
 user_id=1,
 title="对于知乎新人你们有什么好的建议？", 
-description="我是一个知乎的新用户，各位大大们有什么好的关注话题推荐一下，或者一些好的建议，或者您认为有用的东西，都推荐一下。
+detail="我是一个知乎的新用户，各位大大们有什么好的关注话题推荐一下，或者一些好的建议，或者您认为有用的东西，都推荐一下。
 我的好奇心比较重，所以关注的东西比较多，但我不介意再多一点", 
 created_at=now(),
 modified_at=now(),
@@ -196,8 +195,7 @@ name="知乎";
 
 INSERT question_topics SET
 question_id=1,
-topic_id=1,
-topic_name="知乎";
+topic_id=1;
 
 INSERT question_followers SET
 question_id=1,
@@ -206,3 +204,13 @@ user_id=1;
 INSERT member_followers SET
 member_id=2,
 follower_id=1;
+
+INSERT INTO topics (name) VALUES
+("足球"),
+("篮球"),
+("排球"),
+("游戏"),
+("优秀"),
+("你好"),
+("电脑"),
+("编程");

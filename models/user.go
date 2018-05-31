@@ -2,7 +2,6 @@ package models
 
 import (
 	"database/sql"
-	"errors"
 	"fmt"
 	"log"
 	"strings"
@@ -25,11 +24,6 @@ func InsertUser(user *User) (uid uint, err error) {
 	}
 	defer tx.Rollback()
 
-	dup := isUsernameExist(tx, user.Email)
-	if dup {
-		err = errors.New("user already exists")
-		return 0, err
-	}
 	urlToken, urlTokenCode, err := CreateURLToken(tx, user.Name)
 	if err != nil {
 		return 0, err
@@ -48,20 +42,6 @@ func InsertUser(user *User) (uid uint, err error) {
 		return 0, err
 	}
 	return uid, nil
-}
-
-func isUsernameExist(tx *sql.Tx, username string) bool {
-	var id uint
-	err := tx.QueryRow("SELECT id FROM users WHERE email=?", username).Scan(&id)
-	switch err {
-	case sql.ErrNoRows:
-		return false
-	case nil:
-		return true
-	default:
-		log.Printf("user %q: %v", username, err)
-	}
-	return true //FIXME:
 }
 
 func CreateURLToken(tx *sql.Tx, name string) (string, int, error) {
@@ -106,7 +86,7 @@ func GetUserByUsername(username string) *User {
 
 	user := new(User)
 	if err := stmt.QueryRow(username).Scan(&user.ID, &user.Email, &user.Password); err != nil {
-		log.Printf("user %d: %v", username, err)
+		log.Printf("user %s: %v", username, err)
 		return nil
 	}
 	return user

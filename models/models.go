@@ -20,6 +20,7 @@ type User struct {
 
 	Followed  bool `json:"is_followed"` //followed by user who sent request
 	Following bool `json:"is_following"`
+	Anonymous bool `json:"is_anonymous"`
 }
 
 type Member struct {
@@ -35,15 +36,11 @@ type Member struct {
 	ThankedCount        uint   `json:"thanked_count"`
 }
 
-//type Author struct {
-///	User
-//}
-
 type Question struct {
 	ID           string `json:"id"`
 	User         *User  `json:"user"`
 	Title        string `json:"title"`
-	Description  string `json:"description"`
+	Detail       string `json:"detail"`
 	DateCreated  string `json:"date_created"`
 	DateModified string `json:"date_modified"`
 
@@ -52,8 +49,9 @@ type Question struct {
 	CommentCount  uint `json:"comment_count"`
 	FollowerCount uint `json:"follower_count"`
 
-	Topics  []*Topic
-	Answers []*Answer
+	Topics         []*Topic
+	TopicURLTokens []string `json:"topic_url_tokens"`
+	Answers        []*Answer
 	//	Comments  []*QuestionComment
 	//	Followers []*User
 
@@ -61,11 +59,12 @@ type Question struct {
 	Answered             bool `json:"is_answered"`
 	VisitorAnswerID      uint `json:"visitor_answer_id"`
 	VisitorAnswerDeleted bool `json:"visitor_answer_deleted"`
+	Anonymous            bool `json:"is_anonymous"`
 }
 
 type Topic struct {
-	ID   uint
-	Name string
+	ID   uint   `json:"id"`
+	Name string `json:"name"`
 }
 
 type Answer struct {

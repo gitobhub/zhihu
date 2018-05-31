@@ -26,6 +26,8 @@ func Route(router *gin.Engine) {
 	router.GET("/question/:qid", controllers.QuestionGet)
 	//answer
 	router.GET("/question/:qid/answer/:aid", middleware.RefreshSession(), controllers.AnswerGet)
+	//
+	router.GET("/topic/autocomplete", controllers.SearchTopics)
 	//api
 	api := router.Group("/api")
 	{
@@ -36,7 +38,11 @@ func Route(router *gin.Engine) {
 		api.GET("/members/:url_token", controllers.MemberInfo)
 
 		api.Use(middleware.SigninRequired())
+		api.POST("/questions", controllers.PostQuestion)
+		//api.DELETE("/questions/:id", controllers.DeleteQuestion)
+
 		api.POST("/answers/:id/voters", controllers.VoteAnswer)
+
 		//		api.POST("/answers/:id/comments", controllers.PostAnswerComment)
 		//		api.DELETE("/answers/:id/comments", controllers.DeleteAnswerComment)
 
@@ -46,13 +52,17 @@ func Route(router *gin.Engine) {
 
 		api.POST("/questions/:id/comments", controllers.PostQuestionComment)
 		api.DELETE("/questions/:id/comments/:cid", controllers.DeleteQuestionComment) //qid not avaliable
+
 		api.POST("/questions/:id/followers", controllers.FollowQuestion)
 		api.DELETE("/questions/:id/followers", controllers.UnfollowQuestion) //204NoContent
 
 		api.POST("/questions/:id/comments/:cid/actions/like", controllers.LikeQuestionComment)
 		api.DELETE("/questions/:id/comments/:cid/actions/like", controllers.UndoLikeQuestionComment)
+
 		api.POST("/members/:url_token/followers", controllers.FollowMember)
 		api.DELETE("/members/:url_token/followers", controllers.UnfollowMember)
+
+		api.POST("/topics", controllers.PostTopic)
 	}
 }
 

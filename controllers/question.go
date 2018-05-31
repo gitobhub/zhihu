@@ -11,6 +11,38 @@ import (
 	"github.com/gitobhub/zhihu/models"
 )
 
+func PostQuestion(c *gin.Context) {
+	decoder := json.NewDecoder(c.Request.Body)
+	var question models.Question
+	if err := decoder.Decode(&question); err != nil {
+		log.Println("controllers.PostQuestion(): ", err)
+		c.JSON(http.StatusInternalServerError, nil)
+		return
+	}
+	if question.Title == "" || len(question.TopicURLTokens) == 0 {
+		c.JSON(http.StatusOK, gin.H{
+			"success": false,
+		})
+		return
+	}
+	uid := VisitorID(c)
+	if uid == 0 {
+		c.JSON(http.StatusOK, gin.H{
+			"success": false,
+		})
+		return
+	}
+	if err := models.InsertQuestion(&question, uid); err != nil {
+		c.JSON(http.StatusOK, gin.H{
+			"success": false,
+		})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{
+		"success": true,
+	})
+}
+
 func FollowQuestion(c *gin.Context) {
 	id := c.Param("id")
 	if id == "" {

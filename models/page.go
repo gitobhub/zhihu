@@ -88,24 +88,16 @@ func QuestionPage(qid string, uid uint) *Question {
 
 func GetQuestionInfo(qid string, uid uint) (question *Question) {
 	question = NewQuestion()
-	stmt, err := db.Prepare("SELECT id, user_id, title, description, created_at, modified_at, " +
-		"answer_count, follower_count, comment_count FROM questions WHERE id=?")
-	if err != nil {
-		log.Println(err)
-		return
-	}
-	defer stmt.Close()
-
-	if err := stmt.QueryRow(qid).Scan(
+	if err := db.QueryRow("SELECT id, user_id, title, detail, created_at, modified_at, "+
+		"answer_count, follower_count, comment_count FROM questions WHERE id=?", qid).Scan(
 		&question.ID, &question.User.ID, &question.Title,
-		&question.Description, &question.DateCreated, &question.DateModified,
+		&question.Detail, &question.DateCreated, &question.DateModified,
 		&question.AnswerCount, &question.FollowerCount, &question.CommentCount,
 	); err != nil {
 		log.Printf("models.GetQuestionInfo %s: %v", qid, err)
 		return
 	}
 	question.GetTopics()
-	//	question.GetDataFromRedis()
 
 	var temp int
 	//query whether question's followed
@@ -155,7 +147,7 @@ func GetQuestionInfo(qid string, uid uint) (question *Question) {
 }*/
 
 func (q *Question) GetTopics() {
-	rows, err := db.Query("SELECT topic_id, topic_name FROM question_topics WHERE question_id=?", q.ID)
+	rows, err := db.Query("SELECT topic_id, topics.name FROM topics, question_topics WHERE topic_id=topics.id AND question_id=?", q.ID)
 	if err != nil {
 		log.Println(err)
 	}
@@ -190,7 +182,7 @@ func (q *Question) GetAnswers(uid uint) {
 			&answer.Content, &dateCreated, &dateModified,
 			&answer.MarkedCount, &answer.CommentCount,
 		); err != nil {
-			log.Printf("answer %d: %v", answer.ID, err)
+			log.Printf("answer %v: %v", answer.ID, err)
 		}
 		answer.DateCreated = utils.FormatUnixTime(dateCreated)
 		answer.DateModified = utils.FormatUnixTime(dateModified)

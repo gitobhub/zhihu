@@ -8,6 +8,46 @@ import (
 	"github.com/gitobhub/zhihu/utils"
 )
 
+func InsertQuestion(question *Question, uid uint) error {
+	var err error
+	defer func() {
+		if err != nil {
+			log.Println("models.InsertQuestion(): ", err)
+		}
+	}()
+
+	tx, err := db.Begin()
+	if err != nil {
+		return err
+	}
+	defer tx.Rollback()
+
+	row, err := tx.Exec("INSERT questions SET user_id=?, title=?, detail=?",
+		uid, question.Title, question.Detail)
+	if err != nil {
+		return err
+	}
+	qid, err := row.LastInsertId()
+	if err != nil {
+		return err
+	}
+	for _, topic := range question.TopicURLTokens {
+
+		if _, err = tx.Exec("INSERT question_topics SET question_id=?, topic_id=?",
+			qid, topic); err != nil {
+			return err
+		}
+	}
+	if _, err = tx.Exec("UPDATE users SET question_count=question_count+1 WHERE id=?",
+		uid); err != nil {
+		return err
+	}
+	if err = tx.Commit(); err != nil {
+		return err
+	}
+	return nil
+}
+
 func FollowQuestion(qid, uid uint) error {
 	tx, err := db.Begin()
 	if err != nil {
