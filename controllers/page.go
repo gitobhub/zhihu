@@ -13,13 +13,14 @@ type DataState struct {
 	Page     string           `json:"page"`
 	Answers  []*models.Answer `json:"answers"`
 	Question *models.Question `json:"question"`
+	TopStory []*models.Action `json:"topStory"`
 }
 
 func AnswerGet(c *gin.Context) {
 	user, uid := Visitor(c)
 	//	qid, _ := strconv.ParseUint(c.Param("qid"), 10, 0) //question ID
 	aid := c.Param("aid") //answer ID
-	answer := models.AnswerPage(aid, uid)
+	answer := models.GetAnswer(aid, uid)
 	if answer == nil {
 		c.HTML(http.StatusNotFound, "404.html", nil)
 		return
@@ -50,7 +51,7 @@ func QuestionGet(c *gin.Context) {
 		log.Println("controllers.QuestionGet(): no question id")
 		return
 	}
-	question := models.QuestionPage(qid, uid)
+	question := models.GetQuestionWithAnswers(qid, uid)
 	if question == nil {
 		c.HTML(http.StatusNotFound, "404.html", nil)
 		return

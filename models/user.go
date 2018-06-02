@@ -92,7 +92,7 @@ func GetUserByUsername(username string) *User {
 	return user
 }
 
-func GetUserByID(uid uint) *User {
+func GetUserByID(uid interface{}) *User {
 	var err error
 	defer func() {
 		if err != nil {

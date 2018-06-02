@@ -3,6 +3,8 @@ package models
 import (
 	"fmt"
 	"log"
+
+	"github.com/garyburd/redigo/redis"
 )
 
 func (user *User) UpVote(aid string) bool {
@@ -10,22 +12,40 @@ func (user *User) UpVote(aid string) bool {
 	conn.Send("SADD", "upvoted:"+aid, user.ID)
 	conn.Send("SREM", "downvoted:"+aid, user.ID)
 	conn.Flush()
-	if v, err := conn.Receive(); err != nil || v == 0 {
-		log.Println(err, v.(int64))
+	upvoteAddedCount, err := conn.Receive()
+	if err != nil {
 		return false
 	}
-	if v, err := conn.Receive(); err != nil {
-		log.Println(err, v.(int64))
+	if _, err := conn.Receive(); err != nil {
 		return false
 	}
-	log.Println("user", user.ID, "upvote OK")
-	go func() {
-		_, err := db.Exec("INSERT answer_voters SET answer_id=?, user_id=?", aid, user.ID)
-		if err != nil {
-			log.Println("*User.UpVote: ", err)
-		}
-	}()
+
+	UpdateRank(conn, aid, 432)
+	if upvoteAddedCount.(int64) == 1 {
+		go func() {
+			_, err := db.Exec("INSERT answer_voters SET answer_id=?, user_id=?", aid, user.ID)
+			if err != nil {
+				log.Println("*models.User.UpVote: ", err)
+			}
+			HandleNewAction(user.ID, VoteupAnswerAction, aid)
+		}()
+	}
+
 	return true
+}
+
+func UpdateRank(conn redis.Conn, aid string, increment int64) error {
+	_, err := conn.Do("ZINCRBY", "rank", increment, aid)
+	if err != nil {
+		log.Println("models.UpdateRank(): ", err)
+		return err
+	}
+	return nil
+}
+
+func RemoveFromRank(conn redis.Conn, aid string) error {
+	_, err := conn.Do("ZREM", "rank", aid)
+	return err
 }
 
 func (user *User) DownVote(aid string) bool {
@@ -37,17 +57,20 @@ func (user *User) DownVote(aid string) bool {
 		log.Println(err, v.(int64))
 		return false
 	}
-	if v, err := conn.Receive(); err != nil {
-		log.Println(err, v.(int64))
+	upvoteRemovedCount, err := conn.Receive()
+	if err != nil {
 		return false
 	}
-	log.Println("user", user.ID, "downvote OK")
-	go func() {
-		_, err := db.Exec("DELETE FROM answer_voters WHERE answer_id=? AND user_id=?", aid, user.ID)
-		if err != nil {
-			log.Println("*User.DownVote: ", err)
-		}
-	}()
+	UpdateRank(conn, aid, -432)
+
+	if upvoteRemovedCount.(int64) == 1 {
+		go func() {
+			_, err := db.Exec("DELETE FROM answer_voters WHERE answer_id=? AND user_id=?", aid, user.ID)
+			if err != nil {
+				log.Println("*User.DownVote: ", err)
+			}
+		}()
+	}
 	return true
 }
 
@@ -56,24 +79,23 @@ func (user *User) Neutral(aid string) bool {
 	conn.Send("SREM", "upvoted:"+aid, user.ID)
 	conn.Send("SREM", "downvoted:"+aid, user.ID)
 	conn.Flush()
-	if v, err := conn.Receive(); err != nil {
-		log.Println(err, v.(int64))
+	upvoteRemovedCount, err := conn.Receive()
+	if err != nil {
 		return false
 	}
-	if v, err := conn.Receive(); err != nil {
-		log.Println(err, v.(int64))
+	if _, err := conn.Receive(); err != nil {
 		return false
 	}
-	log.Println("user", user.ID, "neutral OK")
-	go func() {
-		_, err := db.Exec("DELETE FROM answer_voters WHERE answer_id=? AND user_id=?", aid, user.ID)
-		//	if err == sql.ErrNoRows {
-		//		return
-		//	}
-		if err != nil {
-			log.Println("*User.DownVote: ", err)
-		}
-	}()
+	UpdateRank(conn, aid, -432)
+
+	if upvoteRemovedCount == 1 {
+		go func() {
+			_, err := db.Exec("DELETE FROM answer_voters WHERE answer_id=? AND user_id=?", aid, user.ID)
+			if err != nil {
+				log.Println("*User.DownVote: ", err)
+			}
+		}()
+	}
 	return true
 }
 

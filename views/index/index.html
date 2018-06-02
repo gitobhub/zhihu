@@ -56,7 +56,7 @@
         </div>
         <div class="TopstoryMain" data-zop-feedlistfather="0">
          <div class="">
-          {{range $answerkey,$answer:=.answers}}
+          {{range $topStorykey,$topStory:=.topStory}}
           <div class="Card TopstoryItem">
            <button class="Button TopstoryItem-rightButton Button--plain" data-tooltip="不感兴趣" data-tooltip-position="bottom" type="button">
             <svg viewbox="0 0 14 14" class="Icon Icon--remove" style="height:10px;width:10px" width="10" height="10" aria-hidden="true">
@@ -68,24 +68,34 @@
            <div class="Feed">
             <div class="FeedSource">
              <div class="FeedSource-firstline">
-              热门内容, 来自: 
-                 {{$topic := index $answer.Question.Topics 0}}
+                    {{if eq $topStory.Type 0}}<span class="UserLink"><div class="Popover"><div id="null-toggle" aria-haspopup="true" aria-expanded="false" aria-owns="null-content">
+                      <a class="UserLink-link" data-za-detail-view-element_name="User" target="_blank" href="/people/{{$topStory.User.URLToken}}">{{$topStory.User.Name}}</a></div></div>
+                </span> 新增了提问<span> · </span>{{$topStory.Question.DateCreated}}
+                    {{else if eq $topStory.Type 1}}<span class="UserLink"><div class="Popover"><div id="null-toggle" aria-haspopup="true" aria-expanded="false" aria-owns="null-content">
+                      <a class="UserLink-link" data-za-detail-view-element_name="User" target="_blank" href="/people/{{$topStory.User.URLToken}}">{{$topStory.User.Name}}</a></div></div></span> 回答了问题<span> · </span>{{$topStory.Answer.DateCreated}}
+                    {{else if eq $topStory.Type 2}}<span class="UserLink"><div class="Popover"><div id="null-toggle" aria-haspopup="true" aria-expanded="false" aria-owns="null-content">
+                      <a class="UserLink-link" data-za-detail-view-element_name="User" target="_blank" href="/people/{{$topStory.User.URLToken}}">{{$topStory.User.Name}}</a></div></div></span> 关注了问题<span> · </span>{{$topStory.DateCreated}}
+                    {{else if eq $topStory.Type 3}}<span class="UserLink"><div class="Popover"><div id="null-toggle" aria-haspopup="true" aria-expanded="false" aria-owns="null-content">
+                      <a class="UserLink-link" data-za-detail-view-element_name="User" target="_blank" href="/people/{{$topStory.User.URLToken}}">{{$topStory.User.Name}}</a></div></div></span> 赞同了回答<span> · </span>{{$topStory.DateCreated}}
+                    {{else}}热门内容, 来自: {{$topic := index $topStory.Question.Topics 0}}
               <span><a class="TopicLink" href="/topic/{{$topic.ID}}" target="_blank">
                 <div class="Popover">
                  <div id="null-toggle" aria-haspopup="true" aria-expanded="false" aria-owns="null-content">
                   {{$topic.Name}}
                  </div>
                 </div></a></span>
+             {{end}}
              </div>
+             {{if $topStory.Answer}}
              <div class="AuthorInfo FeedSource-byline AuthorInfo--plain" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
-              <meta itemprop="name" content="{{$answer.Author.Name}}" />
-              <meta itemprop="image" content="{{$answer.Author.Image}}" />
-              <meta itemprop="url" content="{{$answer.Author.URL}}" />
+              <meta itemprop="name" content="{{$topStory.Answer.Author.Name}}" />
+              <meta itemprop="image" content="{{$topStory.Answer.Author.AvatarURL}}" />
+              <meta itemprop="url" content="{{$topStory.Answer.Author.URLToken}}" />
               <meta itemprop="zhihu:followerCount" />
               <span class="UserLink AuthorInfo-avatarWrapper">
                <div class="Popover">
                 <div id="null-toggle" aria-haspopup="true" aria-expanded="false" aria-owns="null-content">
-                 <a class="UserLink-link" data-za-detail-view-element_name="User" target="_blank" href="//{{$answer.Author.URL}}"><img class="Avatar AuthorInfo-avatar" width="24" height="24" src="{{$answer.Author.Image}}" alt="{{$answer.Author.Name}}" /></a>
+                 <a class="UserLink-link" data-za-detail-view-element_name="User" target="_blank" href="//{{$topStory.Answer.Author.URLToken}}"><img class="Avatar AuthorInfo-avatar" width="24" height="24" src="{{$topStory.Answer.Author.AvatarURL}}" alt="{{$topStory.Answer.Author.Name}}" /></a>
                 </div>
                </div></span>
               <div class="AuthorInfo-content">
@@ -93,86 +103,87 @@
                 <span class="UserLink AuthorInfo-name">
                  <div class="Popover">
                   <div id="null-toggle" aria-haspopup="true" aria-expanded="false" aria-owns="null-content">
-                   <a class="UserLink-link" data-za-detail-view-element_name="User" target="_blank" href="//{{$answer.Author.URL}}">{{$answer.Author.Name}}</a>
+                   <a class="UserLink-link" data-za-detail-view-element_name="User" target="_blank" href="//{{$topStory.Answer.Author.URLToken}}">{{$topStory.Answer.Author.Name}}</a>
                   </div>
                  </div></span>
                </div>
                <div class="AuthorInfo-detail">
                 <div class="AuthorInfo-badge">
                  <div class="RichText AuthorInfo-badgeText">
-                  {{$answer.Author.Bio}}
+                  {{$topStory.Answer.Author.Headline}}
                  </div>
                 </div>
                </div>
               </div>
              </div>
+             {{end}}
             </div>
-            <div class="ContentItem AnswerItem" data-zop="{&quot;authorName&quot;:&quot;{{$answer.Author.Name}}&quot;,&quot;itemId&quot;:{{$answer.ID}},&quot;title&quot;:&quot;{{$answer.Question.Title}}&quot;,&quot;type&quot;:&quot;answer&quot;}" name="{{$answer.ID}}" itemprop="answer" itemtype="http://schema.org/Answer" itemscope="">
+            {{if $topStory.Answer}}
+            <div class="ContentItem AnswerItem" data-zop="{&quot;authorName&quot;:&quot;{{$topStory.Answer.Author.Name}}&quot;,&quot;itemId&quot;:{{$topStory.Answer.ID}},&quot;title&quot;:&quot;{{$topStory.Answer.Question.Title}}&quot;,&quot;type&quot;:&quot;answer&quot;}" name="{{$topStory.Answer.ID}}" itemprop="answer" itemtype="http://schema.org/Answer" itemscope="">
              <h2 class="ContentItem-title">
               <div itemprop="zhihu:question" itemtype="http://schema.org/Question" itemscope="">
-               <meta itemprop="url" content="https://www.zhihu.com/question/{{$answer.Question.ID}}" />
-               <meta itemprop="name" content="{{$answer.Question.Title}}" />
-               <a target="_blank" data-za-detail-view-element_name="Title" href="/question/{{$answer.Question.ID}}/answer/{{$answer.ID}}">{{$answer.Question.Title}}</a>
+               <meta itemprop="url" content="https://www.zhihu.com/question/{{$topStory.Answer.Question.ID}}" />
+               <meta itemprop="name" content="{{$topStory.Answer.Question.Title}}" />
+               <a target="_blank" data-za-detail-view-element_name="Title" href="/question/{{$topStory.Answer.Question.ID}}/answer/{{$topStory.Answer.ID}}">{{$topStory.Answer.Question.Title}}</a>
               </div></h2>
              <div class="ContentItem-meta"></div>
-             <meta itemprop="image" content="{{$answer.Author.Image}}" />
-             <meta itemprop="upvoteCount" content="{{len $answer.Upvotes}}" />
-             <meta itemprop="url" content="https://www.zhihu.com/question/{{$answer.Question.ID}}/answer/{{$answer.ID}}" />
-             <meta itemprop="dateCreated" content="{{$answer.DateCreated}}" />
-             <meta itemprop="dateModified" content="{{$answer.DateModified}}" />
-             <meta itemprop="commentCount" content="{{len $answer.Comments}}" />
+             <meta itemprop="image" content="{{$topStory.Answer.Author.AvatarURL}}" />
+             <meta itemprop="upvoteCount" content="{{$topStory.Answer.UpvoteCount}}" />
+             <meta itemprop="url" content="https://www.zhihu.com/question/{{$topStory.Answer.Question.ID}}/answer/{{$topStory.Answer.ID}}" />
+             <meta itemprop="dateCreated" content="{{$topStory.Answer.DateCreated}}" />
+             <meta itemprop="dateModified" content="{{$topStory.Answer.DateModified}}" />
+             <meta itemprop="commentCount" content="{{len $topStory.Answer.Comments}}" />
              <div class="RichContent is-collapsed">
               <div class="RichContent-inner">
-               <span class="RichText CopyrightRichText-richText" itemprop="text">
-           
-               {{$answer.Content}}
-  
-           </span>
-               <button class="Button ContentItem-more Button--plain" type="button">阅读全文
+               <span class="RichText CopyrightRichText-richText" itemprop="text">{{$topStory.Answer.Content}}</span>
+               {{if gt (len $topStory.Answer.Content) 100}}<button class="Button ContentItem-more Button--plain" type="button">阅读全文
                 <svg viewbox="0 0 10 6" class="Icon ContentItem-arrowIcon Icon--arrow" style="height:16px;width:10px" width="10" height="16" aria-hidden="true">
                  <title></title>
                  <g>
                   <path d="M8.716.217L5.002 4 1.285.218C.99-.072.514-.072.22.218c-.294.29-.294.76 0 1.052l4.25 4.512c.292.29.77.29 1.063 0L9.78 1.27c.293-.29.293-.76 0-1.052-.295-.29-.77-.29-1.063 0z" />
                  </g>
-                </svg></button>
+                </svg></button>{{end}}
               </div>
-              <div class="ContentItem-actions">
-               <span><button class="Button VoteButton VoteButton--up" aria-label="赞同" type="button">
-                 <svg viewbox="0 0 20 18" class="Icon VoteButton-upIcon Icon--triangle" style="height:16px;width:9px" width="9" height="16" aria-hidden="true">
-                  <title></title>
-                  <g>
-                   <path d="M0 15.243c0-.326.088-.533.236-.896l7.98-13.204C8.57.57 9.086 0 10 0s1.43.57 1.784 1.143l7.98 13.204c.15.363.236.57.236.896 0 1.386-.875 1.9-1.955 1.9H1.955c-1.08 0-1.955-.517-1.955-1.9z" />
-                  </g>
-                 </svg>{{len $answer.Upvotes}}</button><button class="Button VoteButton VoteButton--down" aria-label="反对" type="button">
-                 <svg viewbox="0 0 20 18" class="Icon VoteButton-downIcon Icon--triangle" style="height:16px;width:9px" width="9" height="16" aria-hidden="true">
-                  <title></title>
-                  <g>
-                   <path d="M0 15.243c0-.326.088-.533.236-.896l7.98-13.204C8.57.57 9.086 0 10 0s1.43.57 1.784 1.143l7.98 13.204c.15.363.236.57.236.896 0 1.386-.875 1.9-1.955 1.9H1.955c-1.08 0-1.955-.517-1.955-1.9z" />
-                  </g>
-                 </svg></button></span>
-               <button class="Button ContentItem-action Button--plain Button--withIcon Button--withLabel" type="button"><span style="display:inline-flex;align-items:center">​
-                 <svg class="Zi Zi--Comment Button-zi" fill="currentColor" viewbox="0 0 24 24" width="1.2em" height="1.2em">
-                  <path d="M10.241 19.313a.97.97 0 0 0-.77.2 7.908 7.908 0 0 1-3.772 1.482.409.409 0 0 1-.38-.637 5.825 5.825 0 0 0 1.11-2.237.605.605 0 0 0-.227-.59A7.935 7.935 0 0 1 3 11.25C3 6.7 7.03 3 12 3s9 3.7 9 8.25-4.373 9.108-10.759 8.063z" fill-rule="evenodd"></path>
-                 </svg></span>{{len $answer.Comments}} 条评论</button>
-               <div class="Popover ShareMenu ContentItem-action">
-                <div class="" id="null-toggle" aria-haspopup="true" aria-expanded="false" aria-owns="null-content">
-                 <button class="Button Button--plain Button--withIcon Button--withLabel" type="button"><span style="display:inline-flex;align-items:center">​
-                   <svg class="Zi Zi--Share Button-zi" fill="currentColor" viewbox="0 0 24 24" width="1.2em" height="1.2em">
-                    <path d="M2.931 7.89c-1.067.24-1.275 1.669-.318 2.207l5.277 2.908 8.168-4.776c.25-.127.477.198.273.39L9.05 14.66l.927 5.953c.18 1.084 1.593 1.376 2.182.456l9.644-15.242c.584-.892-.212-2.029-1.234-1.796L2.93 7.89z" fill-rule="evenodd"></path>
-                   </svg></span>分享</button>
-                </div>
-               </div>
-               <button class="Button ContentItem-action Button--plain Button--withIcon Button--withLabel" type="button"><span style="display:inline-flex;align-items:center">​
-                 <svg class="Zi Zi--Star Button-zi" fill="currentColor" viewbox="0 0 24 24" width="1.2em" height="1.2em">
-                  <path d="M5.515 19.64l.918-5.355-3.89-3.792c-.926-.902-.639-1.784.64-1.97L8.56 7.74l2.404-4.871c.572-1.16 1.5-1.16 2.072 0L15.44 7.74l5.377.782c1.28.186 1.566 1.068.64 1.97l-3.89 3.793.918 5.354c.219 1.274-.532 1.82-1.676 1.218L12 18.33l-4.808 2.528c-1.145.602-1.896.056-1.677-1.218z" fill-rule="evenodd"></path>
-                 </svg></span>收藏</button>
-               <button class="Button ContentItem-action Button--plain Button--withIcon Button--withLabel" type="button"><span style="display:inline-flex;align-items:center">​
-                 <svg class="Zi Zi--Heart Button-zi" fill="currentColor" viewbox="0 0 24 24" width="1.2em" height="1.2em">
-                  <path d="M2 8.437C2 5.505 4.294 3.094 7.207 3 9.243 3 11.092 4.19 12 6c.823-1.758 2.649-3 4.651-3C19.545 3 22 5.507 22 8.432 22 16.24 13.842 21 12 21 10.158 21 2 16.24 2 8.437z" fill-rule="evenodd"></path>
-                 </svg></span>感谢</button>
-              </div>
+              <v class="ContentItem-actions RichContent-actions"> 
+                  <span><button class="Button VoteButton VoteButton--up {{if .Upvoted}}is-active{{end}}" aria-label="赞同" type="button"><svg viewbox="0 0 20 18" class="Icon VoteButton-upIcon Icon--triangle" style="height:16px;width:9px" width="9" height="16" aria-hidden="true"><title></title><g><path d="M0 15.243c0-.326.088-.533.236-.896l7.98-13.204C8.57.57 9.086 0 10 0s1.43.57 1.784 1.143l7.98 13.204c.15.363.236.57.236.896 0 1.386-.875 1.9-1.955 1.9H1.955c-1.08 0-1.955-.517-1.955-1.9z" /></g></svg>{{.UpvoteCount}}</button><button class="Button VoteButton VoteButton--down {{if .Downvoted}}is-active{{end}}" aria-label="反对" type="button"><svg viewbox="0 0 20 18" class="Icon VoteButton-downIcon Icon--triangle" style="height:16px;width:9px" width="9" height="16" aria-hidden="true"><title></title><g> 
+                      <path d="M0 15.243c0-.326.088-.533.236-.896l7.98-13.204C8.57.57 9.086 0 10 0s1.43.57 1.784 1.143l7.98 13.204c.15.363.236.57.236.896 0 1.386-.875 1.9-1.955 1.9H1.955c-1.08 0-1.955-.517-1.955-1.9z" /></g></svg></button>
+                  </span> 
+                  <button class="Button ContentItem-action Button--plain Button--withIcon Button--withLabel" type="button"><span style="display:inline-flex;align-items:center">​ 
+                  <svg class="Zi Zi--Comment Button-zi" fill="currentColor" viewbox="0 0 24 24" width="1.2em" height="1.2em"> 
+                  <path d="M10.241 19.313a.97.97 0 0 0-.77.2 7.908 7.908 0 0 1-3.772 1.482.409.409 0 0 1-.38-.637 5.825 5.825 0 0 0 1.11-2.237.605.605 0 0 0-.227-.59A7.935 7.935 0 0 1 3 11.25C3 6.7 7.03 3 12 3s9 3.7 9 8.25-4.373 9.108-10.759 8.063z" fill-rule="evenodd"></path> 
+                  </svg></span>{{if eq $topStory.Answer.CommentCount 0}}添加评论{{else}}<span>{{$topStory.Answer.CommentCount}}</span> 条评论{{end}}</button> 
+                  <div class="Popover ShareMenu ContentItem-action"> 
+                  <div class="" id="null-toggle" aria-haspopup="true" aria-expanded="false" aria-owns="null-content"> 
+                  <button class="Button Button--plain Button--withIcon Button--withLabel" type="button"><span style="display:inline-flex;align-items:center">​ 
+                      <svg class="Zi Zi--Share Button-zi" fill="currentColor" viewbox="0 0 24 24" width="1.2em" height="1.2em"> 
+                      <path d="M2.931 7.89c-1.067.24-1.275 1.669-.318 2.207l5.277 2.908 8.168-4.776c.25-.127.477.198.273.39L9.05 14.66l.927 5.953c.18 1.084 1.593 1.376 2.182.456l9.644-15.242c.584-.892-.212-2.029-1.234-1.796L2.93 7.89z" fill-rule="evenodd"></path> 
+                      </svg></span>分享</button> 
+                  </div> 
+                  </div> 
+                  <button class="Button ContentItem-action Button--plain Button--withIcon Button--withLabel" type="button"><span style="display:inline-flex;align-items:center">​ 
+                  <svg class="Zi Zi--Star Button-zi" fill="currentColor" viewbox="0 0 24 24" width="1.2em" height="1.2em"> 
+                  <path d="M5.515 19.64l.918-5.355-3.89-3.792c-.926-.902-.639-1.784.64-1.97L8.56 7.74l2.404-4.871c.572-1.16 1.5-1.16 2.072 0L15.44 7.74l5.377.782c1.28.186 1.566 1.068.64 1.97l-3.89 3.793.918 5.354c.219 1.274-.532 1.82-1.676 1.218L12 18.33l-4.808 2.528c-1.145.602-1.896.056-1.677-1.218z" fill-rule="evenodd"></path> 
+                  </svg></span>收藏</button> 
+                  <button class="Button ContentItem-action Button--plain Button--withIcon Button--withLabel" type="button"><span style="display:inline-flex;align-items:center">​ 
+                  <svg class="Zi Zi--Heart Button-zi" fill="currentColor" viewbox="0 0 24 24" width="1.2em" height="1.2em"> 
+                  <path d="M2 8.437C2 5.505 4.294 3.094 7.207 3 9.243 3 11.092 4.19 12 6c.823-1.758 2.649-3 4.651-3C19.545 3 22 5.507 22 8.432 22 16.24 13.842 21 12 21 10.158 21 2 16.24 2 8.437z" fill-rule="evenodd"></path> 
+                  </svg></span>感谢</button> 
+                  <button class="Button ContentItem-action ContentItem-rightButton Button--plain" data-zop-retract-question="true" type="button"><span class="RichContent-collapsedText">收起</span> 
+                  <svg viewbox="0 0 10 6" class="Icon ContentItem-arrowIcon is-active Icon--arrow" style="height:16px;width:10px" width="10" height="16" aria-hidden="true"> 
+                  <title></title> 
+                  <g> 
+                  <path d="M8.716.217L5.002 4 1.285.218C.99-.072.514-.072.22.218c-.294.29-.294.76 0 1.052l4.25 4.512c.292.29.77.29 1.063 0L9.78 1.27c.293-.29.293-.76 0-1.052-.295-.29-.77-.29-1.063 0z" /> 
+                  </g> 
+                  </svg></button> 
              </div>
             </div>
+            {{else}}
+            <div class="ContentItem" data-za-detail-view-path-module="QuestionItem" data-za-extra-module="{&quot;card&quot;:{&quot;content&quot;:{&quot;type&quot;:&quot;Question&quot;,&quot;token&quot;:&quot;276638436&quot;,&quot;item_num&quot;:152,&quot;comment_num&quot;:5,&quot;follower_num&quot;:928,&quot;publish_timestamp&quot;:1525940370000}}}"><h2 class="ContentItem-title"><div class="QuestionItem-title">
+              <a href="/question/{{$topStory.Question.ID}}" target="_blank" data-za-detail-view-name="Title">{{$topStory.Question.Title}}</a></div></h2><div class="RichContent"><div class="RichContent-inner"><span class="RichText ztext CopyrightRichText-richText" itemprop="text"></span></div><div class="ContentItem-actions">
+                <button type="button" class="Button FollowButton ContentItem-action {{if $topStory.Question.Followed}}Button--grey">已关注{{else}}Button--blue">关注问题{{end}}</button><button type="button" class="Button ContentItem-action Button--plain Button--withIcon Button--withLabel"><span style="display: inline-flex; align-items: center;">&#8203;<svg class="Zi Zi--Comment Button-zi" fill="currentColor" viewBox="0 0 24 24" width="1.2em" height="1.2em"><path d="M10.241 19.313a.97.97 0 0 0-.77.2 7.908 7.908 0 0 1-3.772 1.482.409.409 0 0 1-.38-.637 5.825 5.825 0 0 0 1.11-2.237.605.605 0 0 0-.227-.59A7.935 7.935 0 0 1 3 11.25C3 6.7 7.03 3 12 3s9 3.7 9 8.25-4.373 9.108-10.759 8.063z" fill-rule="evenodd"></path></svg>
+                </span>{{$topStory.Question.CommentCount}} 条评论</button><div class="Popover ShareMenu ContentItem-action"><div class="" id="Popover-80829-83169-toggle" aria-haspopup="true" aria-expanded="false" aria-owns="Popover-80829-83169-content"><button type="button" class="Button Button--plain Button--withIcon Button--withLabel"><span style="display: inline-flex; align-items: center;">&#8203;<svg class="Zi Zi--Share Button-zi" fill="currentColor" viewBox="0 0 24 24" width="1.2em" height="1.2em"><path d="M2.931 7.89c-1.067.24-1.275 1.669-.318 2.207l5.277 2.908 8.168-4.776c.25-.127.477.198.273.39L9.05 14.66l.927 5.953c.18 1.084 1.593 1.376 2.182.456l9.644-15.242c.584-.892-.212-2.029-1.234-1.796L2.93 7.89z" fill-rule="evenodd"></path></svg></span>分享</button></div></div><a target="_blank" type="button" class="Button ContentItem-action Button--plain" href="/question/276638436"><span style="display: inline-flex; align-items: center;">&#8203;<svg class="Zi Zi--Answer" fill="currentColor" viewBox="0 0 24 24" width="1.2em" height="1.2em" style="margin-right: 4px;"><path d="M4.5 4h15a1.5 1.5 0 0 1 0 3h-15a1.5 1.5 0 0 1 0-3zm0 6h15a1.5 1.5 0 0 1 0 3h-15a1.5 1.5 0 0 1 0-3zm0 6H12a1.5 1.5 0 0 1 0 3H4.5a1.5 1.5 0 0 1 0-3z" fill-rule="evenodd"></path></svg>
+                </span>{{$topStory.Question.AnswerCount}} 个回答</a></div></div></div>
+            {{end}}
            </div>
           </div>
           {{end}}
@@ -257,10 +268,10 @@
     </main>
    </div>
   </div>
-
-  <script src="/static/heifetz/vendor.js"></script>
-  <script src="/static/heifetz/raven.js" async=""></script>
-  <script src="/static/heifetz/app.js"></script>
-  <script src="/static/heifetz/topstory-routes.js"></script> 
+  <div id="data" style="display:none" data-state="{{.dataState}}"></div>
+  <script src="/static/js/jquery.min.js"></script>
+  <script src="/static/js/jquery.form.js"></script>
+  <script src="/static/heifetz/signflow.js"></script>
+ <script src="/static/heifetz/app.js"></script>
  </body>
 </html>

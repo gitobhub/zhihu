@@ -3,6 +3,7 @@ package models
 import (
 	"log"
 	"strconv"
+	"time"
 )
 
 func InsertAnswer(qid, content string, uid uint) (string, error) {
@@ -19,14 +20,17 @@ func InsertAnswer(qid, content string, uid uint) (string, error) {
 	}
 	defer tx.Rollback()
 
-	res, err := tx.Exec("INSERT answers SET content=?, user_id=?, question_id=?", content, uid, qid)
+	now := time.Now()
+	res, err := tx.Exec("INSERT answers SET content=?, user_id=?, question_id=?, created_at=?", content, uid, qid, now)
 	if err != nil {
 		return "", err
 	}
-	aid, err := res.LastInsertId()
+	id, err := res.LastInsertId()
 	if err != nil {
 		return "", err
 	}
+	aid := strconv.FormatInt(id, 10)
+
 	_, err = tx.Exec("UPDATE questions SET answer_count=answer_count+1 WHERE id=?", qid)
 	if err != nil {
 		return "", err
@@ -35,11 +39,19 @@ func InsertAnswer(qid, content string, uid uint) (string, error) {
 	if err != nil {
 		return "", err
 	}
+
+	conn := redisPool.Get()
+	if err := UpdateRank(conn, aid, now.Unix()); err != nil {
+		return "", err
+	}
+
 	err = tx.Commit()
 	if err != nil {
 		return "", err
 	}
-	return strconv.FormatInt(aid, 10), err
+
+	go HandleNewAction(uid, AnswerQuestionAction, aid)
+	return aid, err
 }
 
 func DeleteAnswer(aid string, uid uint) error {
@@ -73,10 +85,18 @@ func DeleteAnswer(aid string, uid uint) error {
 	if err != nil {
 		return err
 	}
+
+	conn := redisPool.Get()
+	if err = RemoveFromRank(conn, aid); err != nil {
+		return err
+	}
+
 	err = tx.Commit()
 	if err != nil {
 		return err
 	}
+
+	go RemoveAction(uid, AskQuestionAction, aid)
 	return err
 }
 
@@ -95,7 +115,8 @@ func RestoreAnswer(aid string, uid uint) error {
 	defer tx.Rollback()
 
 	var qid string
-	err = tx.QueryRow("SELECT question_id FROM answers WHERE id=?", aid).Scan(&qid)
+	var time int
+	err = tx.QueryRow("SELECT UNIX_TIMESTAMP(created_at), question_id FROM answers WHERE id=?", aid).Scan(&time, &qid)
 	if err != nil {
 		return err
 	}
@@ -111,6 +132,14 @@ func RestoreAnswer(aid string, uid uint) error {
 	if err != nil {
 		return err
 	}
+
+	conn := redisPool.Get()
+	n, err := conn.Do("SCARD", "upvoted:"+aid)
+	score := int64(time + n.(int)*432)
+	if err := UpdateRank(conn, aid, score); err != nil {
+		return err
+	}
+
 	err = tx.Commit()
 	if err != nil {
 		return err

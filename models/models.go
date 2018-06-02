@@ -1,7 +1,10 @@
 package models
 
 import (
+	"fmt"
 	"html/template"
+	"log"
+	"time"
 )
 
 type User struct {
@@ -34,6 +37,22 @@ type Member struct {
 	Description         string `json:"description"`
 	FollowingTopicCount uint   `json:"following_topic_count"`
 	ThankedCount        uint   `json:"thanked_count"`
+}
+
+const (
+	AskQuestionAction = iota
+	AnswerQuestionAction
+	FollowQuestionAction
+	VoteupAnswerAction
+	OtherAction
+)
+
+type Action struct {
+	*User       `json:"user"`
+	Type        int `json:"type"`
+	*Question   `json:"question"`
+	*Answer     `json:"answer"`
+	DateCreated string `json:"created_at"`
 }
 
 type Question struct {
@@ -124,4 +143,70 @@ func NewAnswer() *Answer {
 	answer.Question = NewQuestion()
 	answer.Author = new(User)
 	return answer
+}
+
+func HandleNewAction(user uint, action int, id string) {
+	var err error
+	defer func() {
+		if err != nil {
+			log.Println("models.HandleNewAction(): ", err)
+		}
+	}()
+	conn := redisPool.Get()
+	rows, err := db.Query("SELECT follower_id FROM member_followers WHERE member_id=?", user)
+	if err != nil {
+		return
+	}
+	now := time.Now().Unix()
+	key := fmt.Sprintf("profile:%d", user)
+	field := fmt.Sprintf("%d:%s", action, id)
+	conn.Do("ZADD", key, now, field)
+	var fid string
+	for rows.Next() {
+		if err = rows.Scan(&fid); err != nil {
+			continue
+		}
+		key := "home:" + fid
+		field := fmt.Sprintf("%d:%d:%s", user, action, id)
+		conn.Do("ZADD", key, now, field)
+	}
+	if action == VoteupAnswerAction {
+		n, err := conn.Do("SCARD", "upvoted:"+id)
+		if err != nil {
+			return
+		}
+		score := 86400 + n.(int64)*432
+		println(id, score)
+		_, err = conn.Do("ZADD", "rank", score, id)
+		if err != nil {
+			return
+		}
+	}
+}
+
+func RemoveAction(user uint, action int, id string) {
+	var err error
+	defer func() {
+		if err != nil {
+			log.Println("models.DeleteAction(): ", err)
+		}
+	}()
+
+	conn := redisPool.Get()
+	rows, err := db.Query("SELECT follower_id FROM member_followers WHERE member_id=?", user)
+	if err != nil {
+		return
+	}
+	key := fmt.Sprintf("profile:%d", user)
+	member := fmt.Sprintf("%d:%s", action, id)
+	conn.Do("ZREM", key, member)
+	var fid string
+	for rows.Next() {
+		if err = rows.Scan(&fid); err != nil {
+			continue
+		}
+		key := "home:" + fid
+		member := fmt.Sprintf("%d:%d:%s", user, action, id)
+		conn.Do("ZREM", key, member)
+	}
 }

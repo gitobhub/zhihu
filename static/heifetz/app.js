@@ -4,7 +4,10 @@
 //<button type="button" class="Button QuestionAskButton SearchBarExperiment-askButton Button--primary Button--blue">提问</button>
 
 var dataState = JSON.parse($("#data").attr("data-state"))
-var questionData = JSON.parse($("div[data-zop-question]").attr("data-zop-question"))
+var questionData
+if (dataState.page == "question" || dataState.page == "answer") {
+    questionData = JSON.parse($("div[data-zop-question]").attr("data-zop-question"))
+}
 var authorFollowButtons = []
 //handle author card in answer page 
 if (dataState.page == "answer" && (user == null || dataState.answers[0].author.id != user.id)) {
@@ -55,7 +58,7 @@ function clickFollowQuestionButton($this, qid) {
         }
     }
     if ($this.hasClass("Button--blue")) {
-        xhr.open("delete", "/api/questions/" + qid + "/followers", true)
+        xhr.open("delete", "/api/q  uestions/" + qid + "/followers", true)
     } else if ($this.hasClass("Button--grey")) {
         xhr.open("post", "/api/questions/" + qid + "/followers", true)
     }
@@ -96,13 +99,20 @@ function clickUpvote(b) {
         var res = handleAjaxResponse(xhr)
         if (res === false) {
             b.upRestore();
+        } else {
+            for (i in buttons) {
+                var button = buttons[i]
+                if (button.index !== b.index && button.answerId === b.answerId) {
+                    button.drawUp()
+                }
+            }
         }
     }
     xhr.open("post", "/api/answers/" + b.answerId + "/voters", true);
     if (!b.upvoted) {
-      xhr.send('{\"type\":\"up\"}');
+      xhr.send('{"type":"up"}');
     } else {
-      xhr.send('{\"type\":\"neutral\"}');
+      xhr.send('{"type":"neutral"}');
     }
     b.oldUpvoted=b.upvoted;
     b.oldDownvoted=b.downvoted;
@@ -120,6 +130,13 @@ function clickDownvote(b) {
         var res = handleAjaxResponse(xhr)
         if (res === false) {
             b.downRestore();
+        } else {
+            for (i in buttons) {
+                var button = buttons[i]
+                if (button.index !== b.index && button.answerId === b.answerId) {
+                    button.drawDown()
+                }
+            }
         }
     }
     xhr.open("post", "/api/answers/" + b.answerId + "/voters", true);
@@ -741,12 +758,14 @@ function showUserHoverCard(e, data, i) {
 }
 
 
-var $answerItems = $(".ContentItem.AnswerItem");
+var $answerItems = $(".List-item, .Card.TopstoryItem, .Card.AnswerCard");
 var upButtons = document.getElementsByClassName("VoteButton--up");
-var downButtons = document.getElementsByClassName("VoteButton--down");
+var downButtons = document.getElementsByClassName("VoteButton--down"); 
+var buttons = []
 for (i =0; i < $answerItems.length; i++) {
     var button = new Object();
-    button.answerId = $answerItems.eq(i).attr("name");
+    button.index = i
+    button.answerId = $answerItems.eq(i).find("div.AnswerItem").attr("name");
     button.upButton = upButtons[i];
     button.downButton = downButtons[i];
     button.$contentItemMeta = $answerItems.eq(i).find(".ContentItem-meta");
@@ -814,15 +833,21 @@ for (i =0; i < $answerItems.length; i++) {
             var $div = $('<div class="AnswerItem-extraInfo"><span class="Voters"><button class="Button Button--plain" type="button"><span>1</span> 人赞同了该回答</button></span></div>');
             this.$contentItemMeta.append($div);
         } else {
-            this.$contentItemMeta.find("button.Button.Button--plain").find("span").get(0).firstChild.nodeValue++;
+            $elem = this.$contentItemMeta.find("button.Button.Button--plain").find("span")
+            if ($elem.length > 0) {
+                $elem.get(0).firstChild.nodeValue++;
+            }
         }
     };
     button.reduceVotersCount = function() {
         this.upButton.firstChild.nextSibling.textContent--;            
         this.upButton.classList.remove("is-active");
-        this.$contentItemMeta.find("button.Button.Button--plain").find("span").get(0).firstChild.nodeValue--;
-        if (this.$contentItemMeta.find("button.Button.Button--plain").find("span").get(0).firstChild.nodeValue == 0) {
-            this.$contentItemMeta.find(".AnswerItem-extraInfo").remove();
+        $elem = this.$contentItemMeta.find("button.Button.Button--plain").find("span")
+        if ($elem.length > 0) {
+            this.$contentItemMeta.find("button.Button.Button--plain").find("span").get(0).firstChild.nodeValue--;
+            if (this.$contentItemMeta.find("button.Button.Button--plain").find("span").get(0).firstChild.nodeValue == 0) {
+                this.$contentItemMeta.find(".AnswerItem-extraInfo").remove();
+            }
         }
     }
     createUpvoteEvent(button)
@@ -833,6 +858,7 @@ for (i =0; i < $answerItems.length; i++) {
     });   
     //author avatar clickover event
     createMouseOverAnswerAuthorEvent(i)
+    buttons[i] = button
 }
 
 function createUpvoteEvent(button){
@@ -849,7 +875,11 @@ function createDownvoteEvent(button) {
 
 function createMouseOverAnswerAuthorEvent(i) {
     $answerItems.eq(i).on("mouseover", ".UserLink-link", function(e) {
-        handleMouseOverUserEvent(e, dataState.answers[i].author, i)
+        if (dataState.answers) {
+            handleMouseOverUserEvent(e, dataState.answers[i].author, i)
+        } else if (dataState.topStory) {
+            handleMouseOverUserEvent(e, dataState.topStory[i].answer.author, i)
+        }
     })
     $answerItems.eq(i).on("mouseout", ".UserLink-link", function(e) {
         handleMouseOutUserEvent(e)
@@ -986,7 +1016,7 @@ function handleInputBox(placeholderText) {
             }
             
             if ($this.find('span:first').text().length == 1) {
-                //e.preventDefault()
+                //e.preventDefault()    
                 $this.find('span:first').append($('<br data-text="true">'))
                 
             }
@@ -1240,10 +1270,12 @@ $("button.QuestionAskButton").on("click", function() {
         var detail = $("div.notranslate.public-DraftEditor-content").text()
         var xhr = new XMLHttpRequest()
         xhr.onload = function() {
+            alert(xhr.responseText)
             if (xhr.status === 200) {
                 var resp = JSON.parse(xhr.responseText)
+                alert(xhr.responseText)
                 if (resp.success === true) {
-                    window.location.href = "/question" + resp.question_id
+                    window.location.href = "/question/" + resp.questionId
                 }
             }
         }

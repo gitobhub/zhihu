@@ -39,25 +39,20 @@ func PostQuestion(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{
-		"success": true,
+		"success":    true,
+		"questionId": question.ID,
 	})
 }
 
 func FollowQuestion(c *gin.Context) {
-	id := c.Param("id")
-	if id == "" {
+	qid := c.Param("id")
+	if qid == "" {
 		c.JSON(http.StatusNotFound, nil)
-		return
-	}
-	qid, err := strconv.ParseUint(id, 10, 0)
-	if err != nil {
-		c.JSON(http.StatusNotFound, nil)
-		log.Println("controllers.FollowQuestion(): ", id, err)
 		return
 	}
 
 	uid := VisitorID(c)
-	if err := models.FollowQuestion(uint(qid), uid); err != nil {
+	if err := models.FollowQuestion(qid, uid); err != nil {
 		c.JSON(http.StatusNotFound, nil)
 		log.Println("controllers.FollowQuestion(): ", err)
 		return
@@ -68,20 +63,14 @@ func FollowQuestion(c *gin.Context) {
 }
 
 func UnfollowQuestion(c *gin.Context) {
-	id := c.Param("id")
-	if id == "" {
+	qid := c.Param("id")
+	if qid == "" {
 		c.JSON(http.StatusNotFound, nil)
-		return
-	}
-	qid, err := strconv.ParseUint(id, 10, 0)
-	if err != nil {
-		c.JSON(http.StatusNotFound, nil)
-		log.Println("controllers.UnfollowQuestion(): ", id, err)
 		return
 	}
 
 	uid := VisitorID(c)
-	if err := models.UnfollowQuestion(uint(qid), uid); err != nil {
+	if err := models.UnfollowQuestion(qid, uid); err != nil {
 		c.JSON(http.StatusNotFound, nil)
 		log.Println("controllers.UnfollowQuestion(): ", err)
 		return

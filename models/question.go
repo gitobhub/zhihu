@@ -3,6 +3,7 @@ package models
 import (
 	"fmt"
 	"log"
+	"strconv"
 	//"time"
 
 	"github.com/gitobhub/zhihu/utils"
@@ -27,10 +28,12 @@ func InsertQuestion(question *Question, uid uint) error {
 	if err != nil {
 		return err
 	}
-	qid, err := row.LastInsertId()
+	id, err := row.LastInsertId()
 	if err != nil {
 		return err
 	}
+	qid := strconv.FormatInt(id, 10)
+	question.ID = qid
 	for _, topic := range question.TopicURLTokens {
 
 		if _, err = tx.Exec("INSERT question_topics SET question_id=?, topic_id=?",
@@ -45,10 +48,11 @@ func InsertQuestion(question *Question, uid uint) error {
 	if err = tx.Commit(); err != nil {
 		return err
 	}
+	go HandleNewAction(uid, AskQuestionAction, qid)
 	return nil
 }
 
-func FollowQuestion(qid, uid uint) error {
+func FollowQuestion(qid string, uid uint) error {
 	tx, err := db.Begin()
 	if err != nil {
 		return err
@@ -66,10 +70,11 @@ func FollowQuestion(qid, uid uint) error {
 	if err := tx.Commit(); err != nil {
 		return err
 	}
+	go HandleNewAction(uid, FollowQuestionAction, qid)
 	return nil
 }
 
-func UnfollowQuestion(qid, uid uint) error {
+func UnfollowQuestion(qid string, uid uint) error {
 	tx, err := db.Begin()
 	if err != nil {
 		return err
@@ -87,6 +92,7 @@ func UnfollowQuestion(qid, uid uint) error {
 	if err := tx.Commit(); err != nil {
 		return err
 	}
+	go RemoveAction(uid, FollowQuestionAction, qid)
 	return nil
 }
 
@@ -226,7 +232,7 @@ func InsertQuestionComment(qid, content string, uid uint) (*Comment, error) {
 	var err error
 	defer func() {
 		if err != nil {
-			log.Println("*Page.QestionComments(): ", err)
+			log.Println("*Page.InsertQestionComment(): ", err)
 		}
 	}()
 
@@ -248,7 +254,7 @@ func InsertQuestionComment(qid, content string, uid uint) (*Comment, error) {
 		return nil, err
 	}
 	if err = tx.QueryRow("SELECT users.id, users.fullname, users.gender, users.headline, "+
-		"users.avatar_url, users.url_token, user.url_token_code, users.answer_count, users.follower_count, "+
+		"users.avatar_url, users.url_token, users.url_token_code, users.answer_count, users.follower_count, "+
 		"question_comments.id, question_comments.content, unix_timestamp(question_comments.created_at) FROM users, question_comments "+
 		"WHERE users.id=question_comments.user_id AND question_comments.id=LAST_INSERT_ID() AND question_comments.user_id=?", uid).Scan(
 		&author.ID, &author.Name, &author.Gender, &author.Headline, &author.AvatarURL,

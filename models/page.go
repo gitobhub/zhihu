@@ -2,9 +2,12 @@ package models
 
 import (
 	"database/sql"
+	"fmt"
 	"log"
 	"strconv"
+	"strings"
 
+	"github.com/garyburd/redigo/redis"
 	"github.com/gin-contrib/sessions"
 	"github.com/gitobhub/zhihu/utils"
 	_ "github.com/go-sql-driver/mysql"
@@ -24,13 +27,84 @@ type Paging struct {
 	Next    string
 }
 
-func TopContent(uid uint) []*Answer {
-	var answers []*Answer
-	//	answers = append(answers, Answer(1, uid))
-	return answers
+func HomeTimeline(uid uint) []*Action {
+	if uid == 0 {
+		return TopStory(uid)
+	}
+	key := fmt.Sprintf("home:%d", uid)
+	conn := redisPool.Get()
+	res, err := redis.Strings(conn.Do("ZREVRANGE", key, 0, 9))
+	if err != nil {
+		log.Println("models.TopContent(): ", err)
+		return nil
+	}
+	var actions []*Action
+	for _, member := range res {
+		action := new(Action)
+		s := strings.SplitN(member, ":", 3)
+		act, err := strconv.Atoi(s[1])
+		id := s[2]
+		if err != nil {
+			continue
+		}
+		if id != "" {
+			who, err := strconv.Atoi(s[0])
+			if err != nil {
+				continue
+			}
+			action.User = GetUserByID(who)
+		}
+		time, err := redis.Int64(conn.Do("ZSCORE", key, member))
+		if err != nil {
+			log.Println("models.TopContent(): ", err)
+			continue
+		}
+		action.DateCreated = utils.FormatBeforeUnixTime(time)
+		switch act {
+		case AskQuestionAction:
+			action.Type = AskQuestionAction
+			action.Question = GetQuestion(id, uid)
+		case AnswerQuestionAction:
+			action.Type = AnswerQuestionAction
+			action.Answer = GetAnswer(id, uid, "before")
+		case FollowQuestionAction:
+			action.Type = FollowQuestionAction
+			action.Question = GetQuestion(id, uid)
+		case VoteupAnswerAction:
+			action.Type = VoteupAnswerAction
+			action.Answer = GetAnswer(id, uid, "before")
+		default:
+			action.Type = OtherAction
+		}
+		actions = append(actions, action)
+	}
+	//
+	if len(res) == 0 {
+		return TopStory(uid)
+	}
+
+	return actions
 }
 
-func AnswerPage(aid string, uid uint) *Answer {
+func TopStory(uid uint) []*Action {
+	conn := redisPool.Get()
+	actions := []*Action{}
+	answers, err := redis.Strings(conn.Do("ZREVRANGE", "rank", 0, 9))
+	if err != nil {
+		log.Println("models.TopContent(): ", err)
+		return actions
+	}
+	for _, aid := range answers {
+		action := new(Action)
+		action.Type = OtherAction
+		action.Answer = GetAnswer(aid, uid)
+		actions = append(actions, action)
+	}
+	//
+	return actions
+}
+
+func GetAnswer(aid string, uid uint, options ...string) *Answer {
 	answer := NewAnswer()
 	var dateCreated, dateModified int64
 	err := db.QueryRow("SELECT id, question_id, user_id, content, unix_timestamp(created_at), unix_timestamp(modified_at), "+
@@ -45,9 +119,14 @@ func AnswerPage(aid string, uid uint) *Answer {
 		}
 		return nil
 	}
-	answer.DateCreated = utils.FormatUnixTime(dateCreated)
-	answer.DateModified = utils.FormatUnixTime(dateModified)
-	answer.Question = GetQuestionInfo(answer.Question.ID, uid)
+	if len(options) > 0 && options[0] == "before" {
+		answer.DateCreated = utils.FormatBeforeUnixTime(dateCreated)
+		answer.DateModified = utils.FormatBeforeUnixTime(dateModified)
+	} else {
+		answer.DateCreated = utils.FormatUnixTime(dateCreated)
+		answer.DateModified = utils.FormatUnixTime(dateModified)
+	}
+	answer.Question = GetQuestion(answer.Question.ID, uid)
 	answer.GetAuthorInfo(uid)
 	//determine whether user voted this answer
 	answer.QueryRelation(uid)
@@ -79,14 +158,14 @@ func (page *Page) GetAnswerComments(aid uint) (comments []*AnswerComment) {
 	return
 }*/
 
-func QuestionPage(qid string, uid uint) *Question {
-	question := GetQuestionInfo(qid, uid)
+func GetQuestionWithAnswers(qid string, uid uint) *Question {
+	question := GetQuestion(qid, uid)
 	question.GetAnswers(uid)
 
 	return question
 }
 
-func GetQuestionInfo(qid string, uid uint) (question *Question) {
+func GetQuestion(qid string, uid uint) (question *Question) {
 	question = NewQuestion()
 	if err := db.QueryRow("SELECT id, user_id, title, detail, created_at, modified_at, "+
 		"answer_count, follower_count, comment_count FROM questions WHERE id=?", qid).Scan(
