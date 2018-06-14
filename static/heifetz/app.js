@@ -237,7 +237,6 @@ function clickQuestionComments(qid) {
     // })
     $(".notranslate.public-DraftEditor-content").on("keydown", function(e) {
         if(event.keyCode==8) {//keycode为8表示退格键            
-            //alert($('span[data-offset-key="gjjj-0-0"]').text())
             if ($('span[data-offset-key="gjjj-0-0"]').text().length == 1) {
                 $(".Button.CommentEditor-singleButton.Button--primary.Button--blue").attr("disabled", true)
                 $('.DraftEditor-root').prepend($('<div class="public-DraftEditorPlaceholder-root"><div class="public-DraftEditorPlaceholder-inner" id="placeholder-asf8r">写下你的评论...</div></div>'))
@@ -249,7 +248,6 @@ function clickQuestionComments(qid) {
                 
             }
             else if ($(".Editable-unstyled").find("span[data-offset-key='gjjj-0-0']:last").text().length == 0) {
-                // alert($(".Editable-unstyled").length)
                  if ($("span[data-offset-key='gjjj-0-0']").length == 2) {
                     $(".Button.CommentEditor-singleButton.Button--primary.Button--blue").attr("disabled", true)
                     $('.DraftEditor-root').prepend($('<div class="public-DraftEditorPlaceholder-root"><div class="public-DraftEditorPlaceholder-inner" id="placeholder-asf8r">写下你的评论...</div></div>'))     
@@ -594,7 +592,6 @@ function handleMouseOverUserEvent(e, data, i) {
             removeUserHoverCard();
         }
         if (linkTimer !== 0) {
-           //alert("removeLink")
            removeUserHoverCard();
             clearTimeout(linkTimer);
             linkTimer = 0
@@ -612,7 +609,6 @@ function handleMouseOverUserEvent(e, data, i) {
             avatarTimer = setTimeout(function() {
                 avatarCardEntered = false;
                 removeUserHoverCard();
-                //alert("CardremoveAvatar")
                 avatarTimer = 0
             }, 200);
             avatarCardEntered = true;
@@ -638,7 +634,6 @@ function handleMouseOverUserEvent(e, data, i) {
             avatarTimer = 0
             avatarCardEntered = false;
             removeUserHoverCard();
-            //alert("LinkremoveAvatar")
         }
         var hoverCardData = getUserHoverCardData(e, data.url_token)
         
@@ -646,14 +641,12 @@ function handleMouseOverUserEvent(e, data, i) {
             if (linkTimer) {
                 clearTimeout(linkTimer);
                 linkTimer = 0
-               // //alert("claer linkTimer");
             }
             
         });
         $(".Popover-content.Popover-content--bottom.HoverCard-popoverTarget").on("mouseleave", function(e) {
             linkTimer = setTimeout(function() {
                 linkCardEntered = false;
-                //alert("CardremoveLink")
                 removeUserHoverCard();
                 linkTimer = 0
             }, 200);
@@ -669,14 +662,12 @@ function handleMouseOverUserEvent(e, data, i) {
 function handleMouseOutUserEvent(e) {
     if ($(e.target).hasClass("Avatar")) {
         avatarTimer = setTimeout(function() {
-            //alert("removeAvatar")
             removeUserHoverCard();
             avatarTimer = 0
         }, 200);
     }
     else if  (e.target.className == "UserLink-link") {
         linkTimer = setTimeout(function() {
-            //alert("removeLink")
             removeUserHoverCard();
             linkTimer = 0
         }, 200);
@@ -1021,7 +1012,6 @@ function handleInputBox(placeholderText) {
                 
             }
             else if ($this.find('span:last').text().length == 0) {
-                // alert($(".Editable-unstyled").length)
                  if ($this.find('span').length == 2) {
                     $('.DraftEditor-root').prepend($('<div class="public-DraftEditorPlaceholder-root"><div class="public-DraftEditorPlaceholder-inner" id="placeholder-asf8r">' + 
                     placeholderText + '</div></div>'))     
@@ -1270,10 +1260,8 @@ $("button.QuestionAskButton").on("click", function() {
         var detail = $("div.notranslate.public-DraftEditor-content").text()
         var xhr = new XMLHttpRequest()
         xhr.onload = function() {
-            alert(xhr.responseText)
             if (xhr.status === 200) {
                 var resp = JSON.parse(xhr.responseText)
-                alert(xhr.responseText)
                 if (resp.success === true) {
                     window.location.href = "/question/" + resp.questionId
                 }

@@ -160,21 +160,24 @@ func (page *Page) GetAnswerComments(aid uint) (comments []*AnswerComment) {
 
 func GetQuestionWithAnswers(qid string, uid uint) *Question {
 	question := GetQuestion(qid, uid)
+	if question == nil {
+		return nil
+	}
 	question.GetAnswers(uid)
 
 	return question
 }
 
-func GetQuestion(qid string, uid uint) (question *Question) {
-	question = NewQuestion()
+func GetQuestion(qid string, uid uint) *Question {
+	question := NewQuestion()
 	if err := db.QueryRow("SELECT id, user_id, title, detail, created_at, modified_at, "+
 		"answer_count, follower_count, comment_count FROM questions WHERE id=?", qid).Scan(
 		&question.ID, &question.User.ID, &question.Title,
 		&question.Detail, &question.DateCreated, &question.DateModified,
 		&question.AnswerCount, &question.FollowerCount, &question.CommentCount,
 	); err != nil {
-		log.Printf("models.GetQuestionInfo %s: %v", qid, err)
-		return
+		log.Printf("models.GetQuestion %s: %v", qid, err)
+		return nil
 	}
 	question.GetTopics()
 
@@ -202,7 +205,7 @@ func GetQuestion(qid string, uid uint) (question *Question) {
 	//question visit count + 1
 	question.UpdateVisitCount()
 
-	return
+	return question
 }
 
 /*func GetQuestionComments(qid uint) (comments []*QuestionComment) {

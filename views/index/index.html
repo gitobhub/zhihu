@@ -77,7 +77,7 @@
                       <a class="UserLink-link" data-za-detail-view-element_name="User" target="_blank" href="/people/{{$topStory.User.URLToken}}">{{$topStory.User.Name}}</a></div></div></span> 关注了问题<span> · </span>{{$topStory.DateCreated}}
                     {{else if eq $topStory.Type 3}}<span class="UserLink"><div class="Popover"><div id="null-toggle" aria-haspopup="true" aria-expanded="false" aria-owns="null-content">
                       <a class="UserLink-link" data-za-detail-view-element_name="User" target="_blank" href="/people/{{$topStory.User.URLToken}}">{{$topStory.User.Name}}</a></div></div></span> 赞同了回答<span> · </span>{{$topStory.DateCreated}}
-                    {{else}}热门内容, 来自: {{$topic := index $topStory.Question.Topics 0}}
+                    {{else}}热门内容, 来自: {{$topic := index $topStory.Answer.Question.Topics 0}}
               <span><a class="TopicLink" href="/topic/{{$topic.ID}}" target="_blank">
                 <div class="Popover">
                  <div id="null-toggle" aria-haspopup="true" aria-expanded="false" aria-owns="null-content">

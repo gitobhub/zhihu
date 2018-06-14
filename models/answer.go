@@ -4,6 +4,8 @@ import (
 	"log"
 	"strconv"
 	"time"
+
+	"github.com/garyburd/redigo/redis"
 )
 
 func InsertAnswer(qid, content string, uid uint) (string, error) {
@@ -134,8 +136,8 @@ func RestoreAnswer(aid string, uid uint) error {
 	}
 
 	conn := redisPool.Get()
-	n, err := conn.Do("SCARD", "upvoted:"+aid)
-	score := int64(time + n.(int)*432)
+	n, err := redis.Int(conn.Do("SCARD", "upvoted:"+aid))
+	score := int64(time + n*432)
 	if err := UpdateRank(conn, aid, score); err != nil {
 		return err
 	}

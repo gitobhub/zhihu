@@ -2,6 +2,7 @@ package config
 
 import (
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"log"
 )
@@ -21,6 +22,8 @@ type serverConfig struct {
 
 type databaseConfig struct {
 	DriverName string `json:"driver_name"`
+	Host       string
+	Port       string
 	User       string
 	Password   string
 	Database   string
@@ -43,7 +46,7 @@ var (
 )
 
 func initJson() {
-	data, err := ioutil.ReadFile("config/config.json")
+	data, err := ioutil.ReadFile("config/myconfig.json")
 	if err != nil {
 		log.Println(err)
 		return
@@ -60,9 +63,13 @@ func initDatabase() {
 	Database = &Config.Database
 	switch Database.DriverName {
 	case "mysql":
-		Database.DSN = Database.User +
-			":" + Database.Password +
-			"@/" + Database.Database
+		Database.DSN = fmt.Sprintf("%s:%s@tcp(%s:%s)/%s",
+			Database.User,
+			Database.Password,
+			Database.Host,
+			Database.Port,
+			Database.Database,
+		)
 	}
 }
 
