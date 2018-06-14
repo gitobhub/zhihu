@@ -40,11 +40,16 @@ go run main.go
 ```
 
 ## Docker
+#### 获取镜像
 ```
 docker pull dockerobhub/zhihuapp
 docker pull dockerobhub/zhihudb
 docker pull redis
 ```
+或在docker目录自行构建镜像
+
+#### 启动容器
+mysql用户名为docker，默认密码123456
 ```
 docker network create zhihunet
 docker run -d --name mysql --net zhihunet dockerobhub/zhihudb
