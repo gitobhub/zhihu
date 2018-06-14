@@ -39,3 +39,16 @@ govendor sync
 go run main.go
 ```
 
+## Docker
+```
+docker pull dockerobhub/zhihuapp
+docker pull dockerobhub/zhihudb
+docker pull redis
+```
+```
+docker network create zhihunet
+docker run -d --name mysql --net zhihunet dockerobhub/zhihudb
+docker run -d --name redis --net zhihunet redis
+docker run -d --name zhihu --net zhihunet -p 8080:8080 -v $GOPATH:/go dockerobhub/zhihuapp
+```
+
