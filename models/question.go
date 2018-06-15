@@ -184,6 +184,7 @@ func (page *Page) QuestionComments(qid string, offset int, uid uint) []Comment {
 	defer rows.Close()
 
 	conn := redisPool.Get()
+	defer conn.Close()
 	var comments []Comment
 	var i int
 	for ; rows.Next(); i++ {
@@ -237,6 +238,7 @@ func InsertQuestionComment(qid, content string, uid uint) (*Comment, error) {
 	}()
 
 	conn := redisPool.Get()
+	defer conn.Close()
 	comment := new(Comment)
 	var author User
 	var dateCreated int64
@@ -298,12 +300,14 @@ func DeleteQuestionComment(qid, cid string, uid uint) error {
 	}
 
 	conn := redisPool.Get()
+	defer conn.Close()
 	conn.Do("DEL", "question_comment liked:"+cid)
 	return nil
 }
 
 func LikeQuestionComment(cid string, uid uint) error {
 	conn := redisPool.Get()
+	defer conn.Close()
 	v, err := conn.Do("SADD", "question_comment liked:"+cid, uid)
 	if err != nil {
 		return err
@@ -316,6 +320,7 @@ func LikeQuestionComment(cid string, uid uint) error {
 
 func UndoLikeQuestionComment(cid string, uid uint) error {
 	conn := redisPool.Get()
+	defer conn.Close()
 	v, err := conn.Do("SREM", "question_comment liked:"+cid, uid)
 	if err != nil {
 		return err

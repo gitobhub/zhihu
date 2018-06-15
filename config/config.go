@@ -46,7 +46,7 @@ var (
 )
 
 func initJson() {
-	data, err := ioutil.ReadFile("config/myconfig.json")
+	data, err := ioutil.ReadFile("config/config.json")
 	if err != nil {
 		log.Println(err)
 		return

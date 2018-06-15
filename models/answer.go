@@ -43,6 +43,7 @@ func InsertAnswer(qid, content string, uid uint) (string, error) {
 	}
 
 	conn := redisPool.Get()
+	defer conn.Close()
 	if err := UpdateRank(conn, aid, now.Unix()); err != nil {
 		return "", err
 	}
@@ -89,6 +90,7 @@ func DeleteAnswer(aid string, uid uint) error {
 	}
 
 	conn := redisPool.Get()
+	defer conn.Close()
 	if err = RemoveFromRank(conn, aid); err != nil {
 		return err
 	}
@@ -136,6 +138,7 @@ func RestoreAnswer(aid string, uid uint) error {
 	}
 
 	conn := redisPool.Get()
+	defer conn.Close()
 	n, err := redis.Int(conn.Do("SCARD", "upvoted:"+aid))
 	score := int64(time + n*432)
 	if err := UpdateRank(conn, aid, score); err != nil {

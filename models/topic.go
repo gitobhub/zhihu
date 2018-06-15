@@ -13,6 +13,7 @@ import (
 func SearchTopics(token string) []Topic {
 	topics := []Topic{}
 	conn := redisPool.Get()
+	defer conn.Close()
 	//
 	words := strings.Split(token, " ")
 	var keys []interface{}
@@ -95,6 +96,7 @@ func UpdateTopic(topic *Topic) error {
 
 func createTopicIndex(topic *Topic) error {
 	conn := redisPool.Get()
+	defer conn.Close()
 	words := strings.Split(topic.Name, " ")
 	for _, word := range words {
 		key := fmt.Sprintf("ind:%s", word)

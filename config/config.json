@@ -1,14 +1,14 @@
 {
     "database": {
-        "database": "",
+        "database": "zhihu",
         "driver_name": "mysql",
-        "host": "",
-        "port": "",
+        "host": "localhost",
+        "port": "3306",
         "password": "",
         "user": ""
     },
     "redis": {
-        "host": "db",
+        "host": "",
         "max_idle": 3,
         "password": "",
         "port": "6379"

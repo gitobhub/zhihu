@@ -25,9 +25,6 @@ func AnswerGet(c *gin.Context) {
 		c.HTML(http.StatusNotFound, "404.html", nil)
 		return
 	}
-	//	if answer.Deleted {
-	//		c.Redirect(http.StatusSeeOther, "/question/" + answer.Question.ID)
-	//	}
 
 	v := DataState{
 		Page:     "answer",

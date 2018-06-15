@@ -33,6 +33,7 @@ func HomeTimeline(uid uint) []*Action {
 	}
 	key := fmt.Sprintf("home:%d", uid)
 	conn := redisPool.Get()
+	defer conn.Close()
 	res, err := redis.Strings(conn.Do("ZREVRANGE", key, 0, 9))
 	if err != nil {
 		log.Println("models.TopContent(): ", err)
@@ -88,6 +89,7 @@ func HomeTimeline(uid uint) []*Action {
 
 func TopStory(uid uint) []*Action {
 	conn := redisPool.Get()
+	defer conn.Close()
 	actions := []*Action{}
 	answers, err := redis.Strings(conn.Do("ZREVRANGE", "rank", 0, 9))
 	if err != nil {
@@ -278,6 +280,7 @@ func (q *Question) GetAnswers(uid uint) {
 
 func (answer *Answer) QueryRelation(uid uint) {
 	conn := redisPool.Get()
+	defer conn.Close()
 	v, err := conn.Do("SCARD", "upvoted:"+answer.ID)
 	if err != nil {
 		log.Println(err)
@@ -314,6 +317,7 @@ func (answer *Answer) QueryRelation(uid uint) {
 
 func (question *Question) UpdateVisitCount() {
 	conn := redisPool.Get()
+	defer conn.Close()
 	v, err := conn.Do("INCR", "visited:"+question.ID)
 	if err != nil {
 		log.Println("*Question.UpdateVisitCount(): ", question.ID, err)
